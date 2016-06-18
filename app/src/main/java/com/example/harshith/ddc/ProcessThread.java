@@ -17,7 +17,7 @@ public class ProcessThread extends Thread{
     public ProcessThread(GlobalClass globalClass) {
         liveReadings = null;
         this.globalClass = globalClass;
-        globalClass.setProcessHandler(handler);
+
     }
     @Override
     public void run() {
@@ -29,6 +29,12 @@ public class ProcessThread extends Thread{
                 L.m(liveReadings.toString());
             }
         };
+        globalClass.setProcessHandler(handler);
         Looper.loop();
+        while (true){
+            if(liveReadings != null){
+
+            }
+        }
     }
 }

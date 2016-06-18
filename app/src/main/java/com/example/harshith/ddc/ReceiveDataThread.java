@@ -48,27 +48,21 @@ public class ReceiveDataThread extends Thread {
             String readMessage = new String(buffer,0,bytes);
             stringBuilder.append(readMessage);
             convert();
-            ProcessThread processThread = new ProcessThread(globalClass);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-
-            }
-            processThread.start();
-            processHandler = globalClass.getProcessHandler();
+//            ProcessThread processThread = new ProcessThread(globalClass);
+//            processThread.start();
+//
+//            processHandler = globalClass.getProcessHandler();
             while(true) {
                 bytes = inputStream.read(buffer);
                 readMessage = new String(buffer,0,bytes);
                 stringBuilder.append(readMessage);
                 convert();
-                Looper.prepare();
-                if(processHandler != null) {
-                    processHandler.obtainMessage(1, readings).sendToTarget();
-                }
-                else {
-                    processHandler = globalClass.getProcessHandler();
-                }
-                Looper.loop();
+//                if(processHandler != null) {
+//                    processHandler.obtainMessage(1, readings).sendToTarget();
+//                }
+//                else {
+//                    processHandler = globalClass.getProcessHandler();
+//                }
             }
 
 

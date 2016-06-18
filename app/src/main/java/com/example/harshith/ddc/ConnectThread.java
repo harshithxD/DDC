@@ -24,7 +24,6 @@ public class ConnectThread extends Thread {
     GlobalClass globalClass;
     public int isConnected;
     Handler handler;
-    ReceiveDataThread receiveDataThread = null;
 
     public ConnectThread(String address,UUID uuid,Handler handler,GlobalClass globalClass){
         this.address = address;
@@ -41,15 +40,13 @@ public class ConnectThread extends Thread {
             bluetoothSocket = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid);
             bluetoothSocket.connect();
             isConnected = Constants.CONNECTION_STATUS_OK;
-            receiveDataThread = new ReceiveDataThread(bluetoothSocket,handler,globalClass);
-            receiveDataThread.start();
 
         }
         catch (IOException e) {
             isConnected = Constants.CONNECTION_STATUS_NOT_CONNECTED;
         }
         Looper.prepare();
-        Message message = handler.obtainMessage(Constants.CONNECTION_STATUS,isConnected);
+        Message message = handler.obtainMessage(Constants.CONNECTION_STATUS,isConnected,0,bluetoothSocket);
         handler.handleMessage(message);
         Looper.loop();
     }
