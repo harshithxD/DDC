@@ -8,17 +8,18 @@ import java.util.Scanner;
 
 public class Live {
     int reading[];
-    int sensors = 11 ;
+    int sensors = 10;
 
     public Live(){
         reading = new int [sensors];
     }
 
     public Live(Live staticLive){
-        reading = new int [staticLive.sensors];
-        for (int i=0; i<sensors; i++) {
-            reading[i] = staticLive.reading[i];
-        }
+//        reading = new int [staticLive.sensors];
+//        for (int i=0; i<sensors; i++) {
+//            reading[i] = staticLive.reading[i];
+//        }
+        reading = staticLive.reading.clone();
     }
 
 
@@ -30,13 +31,12 @@ public class Live {
     }
 
     public void update(int[] readings){
-        reading = readings;
+        reading = readings.clone();
     }
 
     public void print(){
         for (int i=0; i<sensors; i++) {
-            System.out.print(reading[i] + " ");
+            L.m(reading[i] + " ");
         }
-        System.out.print('\n');
     }
 }

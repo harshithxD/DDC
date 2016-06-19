@@ -4,7 +4,7 @@ package com.example.harshith.ddc;
 public class Gesture{
 
 	public int dataPoints = 15;
-	public int sensors = 11;
+	public int sensors = 10;
 	public int adcLevels = 2;
 	public int adcUpper = 60;
 	public int adcLower = 200;
@@ -15,33 +15,33 @@ public class Gesture{
 	public Gesture(){}
 
 	public void printData(){
-		System.out.println("Printing data...");
+		L.m("Printing data...");
 	}
 
 	public void updateFrame(int [][] sensorLimits){
-		System.out.println("Updating static frame...");
+		L.m("Updating static frame...");
 	}
 
 	public void updateFrame(int [][][] sensorLimits){
-		System.out.println("Updating dynamic frame...");
+		L.m("Updating dynamic frame...");
 	}
 
 	public void updateFrame(int []fing){
-		System.out.println("Updating frame for real...");
+		L.m("Updating frame for real...");
 	}
 
 	public boolean isInFrame(Live live){
-		System.out.println("Checking if the value is in the static frame...");
+		L.m("Checking if the value is in the static frame...");
 		return true;
 	}
 
 	public boolean isInFrame(Live live, int index){
-		System.out.println("Checking if the value is in the dynamic frame...");
+		L.m("Checking if the value is in the dynamic frame...");
 		return true;
 	}
 
 	public void execute(int gest){
 		// perform system function
-		System.out.println(gest);
+		L.m("" + gest);
 	}
 }

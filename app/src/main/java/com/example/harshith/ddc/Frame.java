@@ -34,8 +34,7 @@ public class Frame{
 	}
 
 	public void print(){
-		System.out.print(upperBound);
-		System.out.print(' ');
-		System.out.println(lowerBound);
+		L.m(upperBound + "");
+		L.m(lowerBound + "");
 	}
 }

@@ -33,7 +33,7 @@ public class ReceiveDataThread extends Thread {
             a[i] = new StaticGesture();
         }
 
-        int []hand = {0,0,0,0,0,0,0,0,0,0,0}; int q=0;
+        int[]hand; int q=0;
 
         q=0; hand = new int [] {0,0,0,0,0,8,8,8,8,8,8};
         // neutral

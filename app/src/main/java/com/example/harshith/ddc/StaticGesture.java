@@ -15,38 +15,32 @@ public class StaticGesture extends Gesture {
 		
 		for (int i=0; i<5; i++) {
 			String text = String.format("%03d", eFrame[i][0]);
-			System.out.print(text);
-			System.out.print(" ");
+			L.m(text);
 		}
 		for (int i=5; i<sensors; i++) {
 			if(eFrame[i][1]<0) System.out.print(" ");
 			String text = String.format("%05d", eFrame[i][0]);
-			System.out.print(text);
-			System.out.print(" ");
+			L.m(text);
 		}
-			System.out.print('\n');
 
 		for (int i=0; i<5; i++) {
 			String text = String.format("%03d", eFrame[i][1]);
-			System.out.print(text);
-			System.out.print(" ");
+			L.m(text);
 		}
 		for (int i=5; i<sensors; i++) {
 			String text = String.format("%05d", eFrame[i][1]);
-			System.out.print(text);
-			System.out.print(" ");
+			L.m(text);
 		}
-			System.out.print('\n');
-	
 	}
 
 	public void updateFrame(int [][] sensorLimits){
 		//super.updateFrame(sensorLimits);
-		for (int i=0; i<sensors; i++) {
-			for (int j=0; j<2; j++) {
-				eFrame[i][j] = sensorLimits[i][j];
-			}
-		}
+//		for (int i=0; i<sensors; i++) {
+//			for (int j=0; j<2; j++) {
+//				eFrame[i][j] = sensorLimits[i][j];
+//			}
+//		}
+		eFrame = sensorLimits.clone();
 	}
 
 	public void updateFrame(int []hand){
@@ -55,10 +49,10 @@ public class StaticGesture extends Gesture {
 		
 		Frame []f = new Frame[sensors];
 
-		for (int i=0; i<5; i++) {
+		for (int i=0; i<4; i++) {
 			f[i] = new Frame(hand[i], false, adcUpper, adcLower, 2);
 		}
-		for (int i=5; i<sensors; i++) {
+		for (int i=4; i<sensors; i++) {
 			f[i] = new Frame(hand[i], true, mpuUpper, mpuLower, 3);
 		}
 
@@ -69,7 +63,8 @@ public class StaticGesture extends Gesture {
 		this.updateFrame(data);
 	}
 
-	public boolean isInFrame(Live live){for (int i=0; i<sensors; i++) {
+	public boolean isInFrame(Live live){
+		for (int i=0; i<sensors; i++) {
 			if(!((eFrame[i][0]<live.reading[i]) && (live.reading[i]<eFrame[i][1]))){
 				return false;
 			} 
