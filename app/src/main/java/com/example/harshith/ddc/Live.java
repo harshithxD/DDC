@@ -31,7 +31,9 @@ public class Live {
     }
 
     public void update(int[] readings){
-        reading = readings.clone();
+        for(int i = 0;i < sensors;i++){
+            reading[i] = readings[i];
+        }
     }
 
     public void print(){
