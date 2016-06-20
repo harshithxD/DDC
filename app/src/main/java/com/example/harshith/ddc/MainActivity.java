@@ -3,6 +3,7 @@ package com.example.harshith.ddc;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Set;
+import java.util.jar.Manifest;
 
 /**
  * Created by harshith on 17/6/16.
@@ -62,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         checkBTState();
+
+        if(checkSelfPermission(android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED){
+            requestPermissions(new String[]{android.Manifest.permission.CALL_PHONE},1);
+        }
 
         mPairedDevicesArrayAdapter.clear();
 

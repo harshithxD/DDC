@@ -12,5 +12,10 @@ public class Constants {
     public static int READ_STATUS = 18;
     public static int READ_STATUS_OK = 0;
     public static int READ_STATUS_NOT_OK = 1;
+
+    public static String PLAY_PAUSE = "Play/Pause";
+    public static String OK_GOOGLE = "Ok Google";
+    public static String OPEN_CAMERA = "Camera";
+    public static String GOOGLE_NOW = "GoogleApp";
 }
 

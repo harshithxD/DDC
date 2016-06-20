@@ -1,8 +1,10 @@
 package com.example.harshith.ddc;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.IOException;
@@ -36,15 +38,15 @@ public class ReceiveDataThread extends Thread {
 
         int[]hand; int q=0;
 
-        q=0; hand = new int [] {0,0,0,0,8,8,8,8,8,8};
+        q=0; hand = new int [] {0,1,1,0,8,8,8,8,8,8};
         // neutral
         a[q].updateFrame(hand);
 
-        q=1; hand = new int [] {1,1,0,0,8,8,8,8,1,8};
+        q=1; hand = new int [] {1,1,1,1,8,8,8,8,1,8};
         // voice search
         a[q].updateFrame(hand);
 
-        q=2; hand = new int [] {1,0,1,1,8,8,8,8,1,8};
+        q=2; hand = new int [] {0,1,1,1,8,8,8,8,1,8};
         // tap
         a[q].updateFrame(hand);
 
@@ -130,6 +132,27 @@ public class ReceiveDataThread extends Thread {
 
                     if(count == no){
                         Log.d("Gesture","Gesture " + gestActive + " is activated");
+                        if(gestActive == 0){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,Constants.OPEN_CAMERA).sendToTarget();
+                            Looper.loop();
+                        }
+                        else if(gestActive == 1){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,Constants.OK_GOOGLE).sendToTarget();
+                            Looper.loop();
+                        }
+                        else if(gestActive == 2){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,Constants.GOOGLE_NOW).sendToTarget();
+                            Looper.loop();
+                        }
+                        else if(gestActive == 3){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,Constants.PLAY_PAUSE).sendToTarget();
+                            Looper.loop();
+                        }
+                         
                         count = 0;
                         gestActive = -1;
                         //if( str.equals("n") ) { stay = false; break; }
@@ -151,34 +174,7 @@ public class ReceiveDataThread extends Thread {
                             }
                         }
                     }
-//            int[] flex = new int[5];
-//            for (int i = 0; i != 5; i++) {
-//                try {
-//                    flex[i] = readings[i];
-//                }
-//                catch (ArrayIndexOutOfBoundsException e) {
-//
-//                }
-//            }
-//
-//            int[] mpu = new int[6];
-//            for (int i = 0; i != 6; i++) {
-//                try {
-//                    mpu[i] = readings[5 + i];
-//                }
-//                catch (ArrayIndexOutOfBoundsException e) {
-//
-//                }
-//            }
                 }
-
-
-//                if(processHandler != null) {
-//                    processHandler.obtainMessage(1, readings).sendToTarget();
-//                }
-//                else {
-//                    processHandler = globalClass.getProcessHandler();
-//                }
             }
 
 
