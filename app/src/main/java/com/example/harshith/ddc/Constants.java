@@ -17,5 +17,9 @@ public class Constants {
     public static String OK_GOOGLE = "Ok Google";
     public static String OPEN_CAMERA = "Camera";
     public static String GOOGLE_NOW = "GoogleApp";
+    public static String CAMERA_CLICK = "CameraClick";
+    public static String VOLUME_UP="VolumeUp";
+    public static String VOLUME_DOWN="VolumeDown";
+    public static String END_CALL="EndCall";
 }
 

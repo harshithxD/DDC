@@ -22,8 +22,14 @@ public class Frame{
 		}
 
 		if(index == 8){
-			upperBound = lrBound;
-			lowerBound = upBound;
+			if(isMpu) {
+				upperBound = lrBound;
+				lowerBound = upBound;
+			}
+			else{
+				upperBound = upBound;
+				lowerBound = lrBound;
+			}
 		}
 		
 	}

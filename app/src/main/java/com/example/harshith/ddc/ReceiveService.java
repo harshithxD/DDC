@@ -1,6 +1,7 @@
 package com.example.harshith.ddc;
 
 import android.Manifest;
+import android.app.Instrumentation;
 import android.app.Service;
 import android.bluetooth.BluetoothSocket;
 import android.content.ComponentName;
@@ -50,27 +51,41 @@ public class ReceiveService extends Service {
                         receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass);
                         receiveDataThread.start();
                     }
-                    else if((int) message.obj == Constants.CONNECTION_STATUS_NOT_CONNECTED){
+                    else if(message.arg1 == Constants.CONNECTION_STATUS_NOT_CONNECTED){
                         Toast.makeText(getApplicationContext(),"Couldn't Connect to Dextera Domini, Check whether it is switched on",Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (message.what == Constants.READ_STATUS) {
-                    if(((String)message.obj).equals(Constants.OPEN_CAMERA)){
-                        openCamera();
-                        resumeReading();
-                    }
-                    else if(message.obj.equals(Constants.OK_GOOGLE)){
-                        okGoogle();
-                        L.s(getBaseContext(),"Ok Google");
-                        resumeReading();
-                    }
-                    else if (message.obj.equals(Constants.GOOGLE_NOW)){
-                        googleNow();
-                        resumeReading();
-                    }
-                    else if(message.obj.equals(Constants.PLAY_PAUSE)){
-                        audioPlayPause();
-                        resumeReading();
+                    if (message.arg1 == Constants.READ_STATUS_OK) {
+                        if (((String) message.obj).equals(Constants.OPEN_CAMERA)) {
+                            openCamera();
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.OK_GOOGLE)) {
+                            okGoogle();
+                            L.s(getBaseContext(), "Ok Google");
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.GOOGLE_NOW)) {
+                            googleNow();
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.PLAY_PAUSE)) {
+                            audioPlayPause();
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.CAMERA_CLICK)) {
+                            CameraClick();
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.VOLUME_UP)) {
+                            VolumeUp();
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.VOLUME_DOWN)) {
+                            VolumeDown();
+                            resumeReading();
+                        } else if (message.obj.equals(Constants.END_CALL)) {
+                            EndCall();
+                            resumeReading();
+                        }
+                        else if(message.arg1 == Constants.READ_STATUS_NOT_OK){
+                            L.s(getBaseContext(),"Domini Disconnected");
+                        }
                     }
                 }
             }
@@ -147,6 +162,67 @@ public class ReceiveService extends Service {
         audioManager.dispatchMediaKeyEvent(downEvent);
         KeyEvent upEvent = new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
         audioManager.dispatchMediaKeyEvent(upEvent);
+    }
+
+    public void CameraClick(){
+        Thread t= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Instrumentation inst = new Instrumentation();
+                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_CAMERA);
+                }
+                catch (Exception e){
+
+                }
+            }
+        });
+        t.start();
+    }
+    public void VolumeUp(){
+        Thread t= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Instrumentation inst = new Instrumentation();
+                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_UP);
+                }
+                catch (Exception e){
+
+                }
+            }
+        });
+        t.start();
+    }
+    public void VolumeDown(){
+        Thread t= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Instrumentation inst = new Instrumentation();
+                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_DOWN);
+                }
+                catch (Exception e){
+
+                }
+            }
+        });
+        t.start();
+    }
+    public void EndCall(){
+        Thread t= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Instrumentation inst = new Instrumentation();
+                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENDCALL);
+                }
+                catch (Exception e){
+
+                }
+            }
+        });
+        t.start();
     }
 }
 

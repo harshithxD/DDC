@@ -98,6 +98,7 @@ public class ReceiveDataThread extends Thread {
 
             while(true) {
                 bytes = inputStream.read(buffer);
+                readStatus = Constants.READ_STATUS_OK;
                 String readMessage = new String(buffer,0,bytes);
                 stringBuilder.append(readMessage);
                 int endOfLineIndex = stringBuilder.indexOf("~");
@@ -134,25 +135,45 @@ public class ReceiveDataThread extends Thread {
                         Log.d("Gesture","Gesture " + gestActive + " is activated");
                         if(gestActive == 0){
                             Looper.prepare();
-                            handler.obtainMessage(Constants.READ_STATUS,Constants.OPEN_CAMERA).sendToTarget();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.OPEN_CAMERA).sendToTarget();
                             Looper.loop();
                         }
                         else if(gestActive == 1){
                             Looper.prepare();
-                            handler.obtainMessage(Constants.READ_STATUS,Constants.OK_GOOGLE).sendToTarget();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.OK_GOOGLE).sendToTarget();
                             Looper.loop();
                         }
                         else if(gestActive == 2){
                             Looper.prepare();
-                            handler.obtainMessage(Constants.READ_STATUS,Constants.GOOGLE_NOW).sendToTarget();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.GOOGLE_NOW).sendToTarget();
                             Looper.loop();
                         }
                         else if(gestActive == 3){
                             Looper.prepare();
-                            handler.obtainMessage(Constants.READ_STATUS,Constants.PLAY_PAUSE).sendToTarget();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.PLAY_PAUSE).sendToTarget();
                             Looper.loop();
                         }
-                         
+                        else if(gestActive == 4){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.CAMERA_CLICK).sendToTarget();
+                            Looper.loop();
+                        }
+                        else if(gestActive == 5){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.VOLUME_UP).sendToTarget();
+                            Looper.loop();
+                        }
+                        else if(gestActive == 6){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.VOLUME_DOWN).sendToTarget();
+                            Looper.loop();
+                        }
+                        else if(gestActive == 7){
+                            Looper.prepare();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,Constants.END_CALL).sendToTarget();
+                            Looper.loop();
+                        }
+
                         count = 0;
                         gestActive = -1;
                         //if( str.equals("n") ) { stay = false; break; }
@@ -181,6 +202,9 @@ public class ReceiveDataThread extends Thread {
         }
         catch (IOException e){
             readStatus = Constants.READ_STATUS_NOT_OK;
+            Looper.prepare();
+            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,null);
+            Looper.loop();
         }
     }
 
