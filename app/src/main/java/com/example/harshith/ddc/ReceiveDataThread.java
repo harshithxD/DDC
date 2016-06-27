@@ -26,11 +26,6 @@ public class ReceiveDataThread extends Thread {
         this.handler = handler;
         this.globalClass = globalClass;
         stringBuilder = new StringBuilder();
-
-    }
-
-    public void setProcessHandler(Handler processHandler) {
-        this.processHandler = processHandler;
     }
 
     @Override
@@ -48,27 +43,19 @@ public class ReceiveDataThread extends Thread {
             String readMessage = new String(buffer,0,bytes);
             stringBuilder.append(readMessage);
             convert();
-//            ProcessThread processThread = new ProcessThread(globalClass);
-//            processThread.start();
-//
-//            processHandler = globalClass.getProcessHandler();
             while(true) {
                 bytes = inputStream.read(buffer);
                 readMessage = new String(buffer,0,bytes);
                 stringBuilder.append(readMessage);
                 convert();
-//                if(processHandler != null) {
-//                    processHandler.obtainMessage(1, readings).sendToTarget();
-//                }
-//                else {
-//                    processHandler = globalClass.getProcessHandler();
-//                }
+
             }
-
-
         }
         catch (IOException e){
             readStatus = Constants.READ_STATUS_NOT_OK;
+            Looper.prepare();
+            handler.obtainMessage(Constants.READ_STATUS,readStatus,0,null).sendToTarget();
+            Looper.loop();
         }
     }
 
@@ -102,26 +89,6 @@ public class ReceiveDataThread extends Thread {
             }
             L.m(testConvert);
             stringBuilder.delete(0, endOfLineIndex + 2);
-
-//            int[] flex = new int[5];
-//            for (int i = 0; i != 5; i++) {
-//                try {
-//                    flex[i] = readings[i];
-//                }
-//                catch (ArrayIndexOutOfBoundsException e) {
-//
-//                }
-//            }
-//
-//            int[] mpu = new int[6];
-//            for (int i = 0; i != 6; i++) {
-//                try {
-//                    mpu[i] = readings[5 + i];
-//                }
-//                catch (ArrayIndexOutOfBoundsException e) {
-//
-//                }
-//            }
         }
     }
 }

@@ -33,12 +33,17 @@ public class ReceiveService extends Service {
                         receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass);
                         receiveDataThread.start();
                     }
-                    else if((int) message.obj == Constants.CONNECTION_STATUS_NOT_CONNECTED){
+                    else if(message.arg1 == Constants.CONNECTION_STATUS_NOT_CONNECTED){
                         Toast.makeText(getApplicationContext(),"Couldn't Connect to Dextera Domini, Check whether it is switched on",Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (message.what == Constants.READ_STATUS) {
+                    if(message.arg1 == Constants.READ_STATUS_OK){
 
+                    }
+                    else if(message.arg1 == Constants.READ_STATUS_NOT_OK){
+                        L.s(getBaseContext(),"Connection Lost");
+                    }
                 }
             }
         };
