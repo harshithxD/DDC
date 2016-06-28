@@ -23,6 +23,10 @@ class Live{
 		}
 	}
 
+	public void update(int[] p){
+		reading = p.clone();
+	}
+
 	public void updateConsole(){
 		Scanner scan = new Scanner(System.in).useDelimiter("\\s");
 		for (int i=0; i<sensors; i++) {

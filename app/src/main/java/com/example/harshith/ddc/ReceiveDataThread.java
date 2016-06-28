@@ -35,20 +35,60 @@ public class ReceiveDataThread extends Thread {
             tempIn = bluetoothSocket.getInputStream();
             inputStream = tempIn;
 
+            int noOfGestures = 2;
+
+            Gesture []a = new Gesture[noOfGestures];
+            for (int i = 0; i<noOfGestures; i++) {
+                a[i] = new DynamicGesture();
+            }
+
+            int [][]array = new int[5][11];
+            for (int i=0; i<5; i++) {
+                for (int j=0; j<11; j++) {
+                    array[i][j] = i*2;
+                }
+            }
+
+            a[0].updateFrame(array);
+
+            int [][]array2 = new int[5][11];
+            for (int i=0; i<5; i++) {
+                for (int j=0; j<11; j=j+2) {
+                    array2[i][j] = i*2;
+                }
+                for (int j=1; j<11; j=j+2) {
+                    array2[i][j] = 0;
+                }
+            }
+
+            a[1].updateFrame(array2);
+
+            // initialising the 10 gestures
+
+            DynamicQueue q = new DynamicQueue(a);
+            Live dynamiclive = new Live();
+
             byte[] buffer = new byte[64];
             int bytes = -1;
-
-            bytes = inputStream.read(buffer);
-            readStatus = Constants.READ_STATUS_OK;
-            String readMessage = new String(buffer,0,bytes);
-            stringBuilder.append(readMessage);
+            String readMessage;
+            int i;
             convert();
             while(true) {
                 bytes = inputStream.read(buffer);
+                readStatus = Constants.READ_STATUS_OK;
                 readMessage = new String(buffer,0,bytes);
                 stringBuilder.append(readMessage);
                 convert();
-
+                if(readings.length == 11) {
+                    dynamiclive.update(readings);
+                    q.updateQueue(dynamiclive);
+                    q.processQueue();
+                    i = q.proceedExecution();
+                    if(i != -1){
+                        handler.obtainMessage(Constants.READ_STATUS,readStatus,i,null).sendToTarget();
+                    }
+//                    q.print();
+                }
             }
         }
         catch (IOException e){

@@ -1,7 +1,7 @@
 package com.example.harshith.ddc;
 
 class DynamicQueue{
-	public int noOfSlots = 7;
+	public int noOfSlots = 5000;
 	public int noOfGestures;
 	public Gesture [] gesture;
 	public int [][] dtwGap;
@@ -109,17 +109,18 @@ class DynamicQueue{
 		}
 	}
 
-	public void proceedExecution(){
+	public int proceedExecution(){
 		for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
 			if(getShortlistCount(i)==0) foremostElement = (foremostElement+1)%noOfSlots;
 			else if(getShortlistCount(i)==1) {
 				//gesture execute
-				gesture[firstShortlistGestureIndex(foremostElement)].execute(firstShortlistGestureIndex(foremostElement));
-				foremostElement = (foremostElement+1)%noOfSlots;
+				return firstShortlistGestureIndex(foremostElement);
+//				foremostElement = (foremostElement+1)%noOfSlots;
 			}
 			else break;
 		}
 		overflowCheck();
+        return -1;
 	}
 
 	public void print(){
