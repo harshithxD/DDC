@@ -70,7 +70,6 @@ public class ReceiveDataThread extends Thread {
                 startOfLineIndex = 1;
             }
             String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
-
             String[] readingStrings = dataIn.split("\\+");
             readings = new int[readingStrings.length];
             for (int i = 0; i != readingStrings.length; i++) {
