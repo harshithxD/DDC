@@ -37,21 +37,25 @@ public class ReceiveDataThread extends Thread {
 
             int noOfGestures = 2;
 
-            Gesture []a = new Gesture[noOfGestures];
+            DynamicGesture []a = new DynamicGesture[noOfGestures];
             for (int i = 0; i<noOfGestures; i++) {
                 a[i] = new DynamicGesture();
             }
 
             int [][]array = new int[5][11];
+            int []cons = new int[11];
             for (int i=0; i<5; i++) {
-                for (int j=0; j<11; j++) {
+                for (int j=0; j<5; j++) {
                     array[i][j] = i*2;
                 }
             }
-
-            a[0].updateFrame(array);
+            //cons = new int[] {1,1,1,1,1,0,0,0,0,0,0};
+            cons = new int[] {1,1,1,1,1,1,1,1,1,1,1};
+            a[0].updateFrame(array,cons);
+            a[0].printData();
 
             int [][]array2 = new int[5][11];
+            int []cons2 = new int[11];
             for (int i=0; i<5; i++) {
                 for (int j=0; j<11; j=j+2) {
                     array2[i][j] = i*2;
@@ -60,13 +64,15 @@ public class ReceiveDataThread extends Thread {
                     array2[i][j] = 0;
                 }
             }
-
-            a[1].updateFrame(array2);
+            cons2 = new int[] {1,1,1,1,1,0,0,0,1,0,0};
+            a[1].updateFrame(array2,cons2);
+            a[1].printData();
 
             // initialising the 10 gestures
 
             DynamicQueue q = new DynamicQueue(a);
             Live dynamiclive = new Live();
+
 
             byte[] buffer = new byte[64];
             int bytes = -1;
@@ -79,13 +85,14 @@ public class ReceiveDataThread extends Thread {
                 readMessage = new String(buffer,0,bytes);
                 stringBuilder.append(readMessage);
                 convert();
-                if(readings.length == 11) {
+                if(readings != null && readings.length == 11) {
                     dynamiclive.update(readings);
                     q.updateQueue(dynamiclive);
                     q.processQueue();
                     i = q.proceedExecution();
                     if(i != -1){
-                        handler.obtainMessage(Constants.READ_STATUS,readStatus,i,null).sendToTarget();
+//                        handler.obtainMessage(Constants.READ_STATUS,readStatus,i,null).sendToTarget();
+                        L.m("Gesture " + i + " is executed");
                     }
 //                    q.print();
                 }

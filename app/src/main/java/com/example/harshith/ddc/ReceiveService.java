@@ -16,6 +16,7 @@ import java.util.UUID;
  */
 
 public class ReceiveService extends Service {
+    int mode = 0;
     ConnectThread connectThread;
     ReceiveDataThread receiveDataThread;
     private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");

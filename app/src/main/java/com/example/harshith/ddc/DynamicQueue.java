@@ -3,7 +3,7 @@ package com.example.harshith.ddc;
 class DynamicQueue{
 	public int noOfSlots = 5000;
 	public int noOfGestures;
-	public Gesture [] gesture;
+	public DynamicGesture [] gesture;
 	public int [][] dtwGap;
 	public Live []liveElement;
 	public boolean [][]shortlist;
@@ -11,7 +11,7 @@ class DynamicQueue{
 	public int latestElement = 0;
 	public int foremostElement = 0;
 
-	public DynamicQueue(Gesture []gest){
+	public DynamicQueue(DynamicGesture []gest){
 		gesture = gest.clone();
 		noOfGestures = gesture.length;
 
@@ -73,28 +73,54 @@ class DynamicQueue{
 
 	}
 
-	public int[][] liveTempArrayComp(int slotNo, int livesTailNo){
+	public int[][] liveTempArrayComp(int slotNo, int livesTailNo, int gestNo){
+		
 		int count = 0;
 		for (int i=slotNo; i!=livesTailNo; i=(i+1)%noOfSlots){count++;}
-		int[][] x = new int[count][liveElement[0].sensors];
+		
+		int[][] x = new int[count][gesture[gestNo].getConsiderCount()];
 
-		for (int i=0; i<count; i++){
-		// for (int i=slotNo; i!=livesTailNo; i=(i+1)%noOfSlots){
-			x[i] = liveElement[(i+slotNo)%noOfSlots].reading;
+		int index = 0;
+		for (int i=0; i<liveElement[slotNo].sensors; i++){
+			if(gesture[gestNo].consider[i]){
+				for (int j=0; j<count; j++) {
+					x[j][index] = liveElement[(j+slotNo)%noOfSlots].reading[i]; //gesture[gestNo].point[j][i];
+				}
+				index++;
+			}
+		}		
+		return x;
+	}
+
+	public int[][] validSensorArrayComp(int gestNo){
+
+		int[][] x = new int[gesture[gestNo].dataPoints][gesture[gestNo].getConsiderCount()];
+
+		int index = 0;
+		for (int i=0; i<gesture[gestNo].sensors; i++){
+			if(gesture[gestNo].consider[i]){
+				for (int j=0; j<gesture[gestNo].dataPoints; j++) {
+					x[j][index] = gesture[gestNo].point[j][i];
+				}
+				index++;
+			}
 		}
 		
 		return x;
-	}
+	}	
 
 	public void processLive(int slotNo, int livesTailNo){
 		int threshold = 5;
 		
-		DTW x;	
-		int[][] arraytemp = liveTempArrayComp(slotNo,livesTailNo);
+		DTW x;
 
 		for (int i=0; i<noOfGestures; i++) {
 			x = new DTWtwoD();
-			x.arrayInput(gesture[i].getPoint(), arraytemp);
+			
+			int[][] arraytemp = liveTempArrayComp(slotNo, livesTailNo, i);
+			int[][] gestarraytemp = validSensorArrayComp(i);
+			
+			x.arrayInput(gestarraytemp, arraytemp);
 			dtwGap[slotNo][i] = x.sdtwDistance();
 		}
 		for (int i=0; i<noOfGestures; i++) {

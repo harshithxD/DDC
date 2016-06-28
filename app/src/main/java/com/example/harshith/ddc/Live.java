@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 class Live{
 	public int reading[];
-	public int sensors = 11 ;
+	public int sensors = 11;
 
 	public Live(){
 		reading = new int [sensors];
@@ -17,14 +17,14 @@ class Live{
 		}
 	}
 
-	public void update(int p){
+	public void update(int reading){
 		for (int i=0; i<sensors; i++) {
-			reading[i] = p;
+			this.reading[i] = reading;
 		}
 	}
 
-	public void update(int[] p){
-		reading = p.clone();
+	public void update(int[] readings){
+		reading = readings.clone();
 	}
 
 	public void updateConsole(){
