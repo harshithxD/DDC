@@ -70,16 +70,16 @@ class DynamicPrime{
 		a[1].printData();*/		
 
 
-		DynamicQueue q = new DynamicQueue(a);
-		Live dynamiclive = new Live();
-
-		q.foremostElement = 0;
-		for (int i=0; i<5; i++) {
-			dynamiclive.update(i*2);
-			q.updateQueue(dynamiclive);
-			q.processQueue();
-			q.proceedExecution();
-			q.print();			
-		}
+//		DynamicQueue q = new DynamicQueue(a);
+//		Live dynamiclive = new Live();
+//
+//		q.foremostElement = 0;
+//		for (int i=0; i<5; i++) {
+//			dynamiclive.update(i*2);
+//			q.updateQueue(dynamiclive);
+//			q.processQueue();
+//			q.proceedExecution();
+//			q.print();
+//		}
 	}
 }

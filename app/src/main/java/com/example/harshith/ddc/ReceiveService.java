@@ -22,6 +22,7 @@ public class ReceiveService extends Service {
     private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     public Handler handler;
     GlobalClass globalClass;
+    BluetoothSocket bluetoothSocket;
     @Override
     public void onCreate() {
 
@@ -31,7 +32,8 @@ public class ReceiveService extends Service {
                 if(message.what == Constants.CONNECTION_STATUS) {
                     if(message.arg1 == Constants.CONNECTION_STATUS_OK){
                         Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
-                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass);
+                        bluetoothSocket = (BluetoothSocket) message.obj;
+                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass,true);
                         receiveDataThread.start();
                     }
                     else if(message.arg1 == Constants.CONNECTION_STATUS_NOT_CONNECTED){
@@ -40,7 +42,10 @@ public class ReceiveService extends Service {
                 }
                 else if (message.what == Constants.READ_STATUS) {
                     if(message.arg1 == Constants.READ_STATUS_OK){
+                        Toast.makeText(getBaseContext(),"Gesture " + message.arg2 + " is executed",Toast.LENGTH_SHORT).show();
 
+                        receiveDataThread = new ReceiveDataThread(bluetoothSocket,handler,globalClass,false);
+                        receiveDataThread.start();
                     }
                     else if(message.arg1 == Constants.READ_STATUS_NOT_OK){
                         L.s(getBaseContext(),"Connection Lost");

@@ -22,7 +22,7 @@ class DTWtwoD extends DTW {
             totalSquared += Math.pow(a[p][i] - b[q][i],2);
         }
 
-        return Math.sqrt(totalSquared);
+        return Math.sqrt(Math.sqrt(totalSquared));
     }
 
     public int sdtwDistance(){

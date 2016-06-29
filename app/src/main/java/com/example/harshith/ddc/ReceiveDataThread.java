@@ -20,13 +20,15 @@ public class ReceiveDataThread extends Thread {
     GlobalClass globalClass;
     public int readStatus;
     private StringBuilder stringBuilder = null;
+    boolean isFirstTime;
     int[] readings;
-
-    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler handler,GlobalClass globalClass) {
+    int[] threshold;
+    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler handler,GlobalClass globalClass,boolean b) {
         this.bluetoothSocket = bluetoothSocket;
         this.handler = handler;
         this.globalClass = globalClass;
         stringBuilder = new StringBuilder();
+        isFirstTime = b;
     }
 
     @Override
@@ -35,13 +37,16 @@ public class ReceiveDataThread extends Thread {
             InputStream tempIn = null;
             tempIn = bluetoothSocket.getInputStream();
             inputStream = tempIn;
-
-
+            if(!isFirstTime) {
+                byte[] clearing = new byte[1000];
+                inputStream.read(clearing);
+            }
 
             int noOfGestures = 12;
             int indx; int [][]array;
             int []cons;
             DynamicGesture []a = new DynamicGesture[noOfGestures];
+            threshold = new int[noOfGestures];
             // initialising the 11 gestures
 
             indx=0;
@@ -58,17 +63,16 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
-
+            threshold[indx] = 40;
 
             indx=1;
             array = new int[201][11];
 
-            setValue(array,20,0,201);
-            setValue(array,90,1,201);
-            setValue(array,90,2,201);
-            setValue(array,90,3,201);
-            setValue(array,90,4,201);
+            setValue(array,0,0,201);
+            setValue(array,100,1,201);
+            setValue(array,100,2,201);
+            setValue(array,100,3,201);
+            setValue(array,100,4,201);
             lineDraw(array, 0, 0, 51, 5, false); lineDraw(array, 50, -50, 101, 5, true); lineDraw(array, 150, 50, 51, 5, false);
             setValue(array,0,8,201);
             setValue(array,0,9,201);
@@ -77,8 +81,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,1,0,0,1,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
-
+//            a[indx].printData();
+            threshold[indx] = 40;
 
             indx=2;
             array = new int[51][11];
@@ -93,8 +97,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,1,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
-
+//            a[indx].printData();
+            threshold[indx] = 40;
 
             indx=3;
             array = new int[101][11];
@@ -110,8 +114,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
-
+//            a[indx].printData();
+            threshold[indx] = 40;
 
             indx=4;
             array = new int[101][11];
@@ -127,7 +131,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=5;
@@ -145,7 +150,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,1,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=6;
@@ -165,7 +171,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,1,0,0,1,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=7;
@@ -184,7 +191,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,1,0,0,1,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=8;
@@ -201,7 +209,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=9;
@@ -218,7 +227,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=10;
@@ -235,7 +245,8 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
 
             indx=11;
@@ -252,17 +263,18 @@ public class ReceiveDataThread extends Thread {
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
             a[indx].updateFrame(array,cons);
-            a[indx].printData();
+//            a[indx].printData();
+            threshold[indx] = 40;
 
-
-            DynamicQueue q = new DynamicQueue(a);
+            threshold = new int[]{5,10,10,10,10,10,10,10,10,10,30,10};
+            DynamicQueue q = new DynamicQueue(a,threshold);
             Live dynamiclive = new Live();
 
 
             byte[] buffer = new byte[64];
             int bytes = -1;
             String readMessage;
-            int i;
+            int i, counter = 1;
             convert();
             while(true) {
                 bytes = inputStream.read(buffer);
@@ -273,16 +285,18 @@ public class ReceiveDataThread extends Thread {
                 if(readings != null && readings.length == 11) {
                     dynamiclive.update(readings);
                     q.updateQueue(dynamiclive);
-                    q.processQueue();
-                    i = q.proceedExecution();
-                    if(i != -1){
-                        Looper.prepare();
-                        handler.obtainMessage(Constants.READ_STATUS,readStatus,i,null).sendToTarget();
-                        L.m("Gesture " + i + " is executed");
-                        q.gestureStatusPrint();
-                        Looper.loop();
+                    if(counter > 20) {
+                        q.processQueue();
+                        i = q.proceedExecution();
+                        if (i != -1) {
+                            Looper.prepare();
+                            handler.sendMessageDelayed(handler.obtainMessage(Constants.READ_STATUS, readStatus, i, null), 10000);
+                            L.m("Gesture " + i + " is executed");
+                            q.gestureStatusPrint();
+                            Looper.loop();
+                        }
                     }
-
+                    counter++;
 //                    q.print();
                 }
             }

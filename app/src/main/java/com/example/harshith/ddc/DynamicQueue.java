@@ -1,5 +1,8 @@
 package com.example.harshith.ddc;
 
+import java.lang.reflect.Array;
+import java.util.Queue;
+
 class DynamicQueue{
 	public int noOfSlots = 2000;
 	public int noOfGestures;
@@ -10,10 +13,12 @@ class DynamicQueue{
 
 	public int latestElement = 0;
 	public int foremostElement = 0;
+	public int[] threshold;
 
-	public DynamicQueue(DynamicGesture []gest){
+	public DynamicQueue(DynamicGesture []gest,int[] threshold){
 		gesture = gest.clone();
 		noOfGestures = gesture.length;
+		this.threshold = threshold.clone();
 
 		liveElement = new Live[noOfSlots];
 		for (int i=0; i<noOfSlots; i++) {
@@ -110,8 +115,6 @@ class DynamicQueue{
 	}	
 
 	public void processLive(int slotNo, int livesTailNo){
-		int threshold = 30;
-		
 		DTW x;
 
 		for (int i=0; i<noOfGestures; i++) {
@@ -124,19 +127,28 @@ class DynamicQueue{
 			dtwGap[slotNo][i] = x.sdtwDistance();
 		}
 		for (int i=0; i<noOfGestures; i++) {
-			if(dtwGap[slotNo][i]>=threshold) shortlist[slotNo][i] = false;
+			if(dtwGap[slotNo][i]>=threshold[i]) shortlist[slotNo][i] = false;
 		}
 
 	}
 
 	public void processQueue(){
-		for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
+//        int no;
+//        if(latestElement > foremostElement){
+//            no = Math.max(foremostElement,latestElement-20)%noOfSlots;
+//        }
+//        else {
+//            no = (latestElement - 20)%noOfSlots;
+//        }
+		for (int i=foremostElement;i != latestElement ; i=(i+1)%noOfSlots) {
 			processLive(i,latestElement);
 		}
 	}
 
 	public int proceedExecution(){
-		for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
+        int no;
+        no = Math.max((latestElement - 20)%noOfSlots,foremostElement);
+        for (int i=foremostElement; i!=no; i=(i+1)%noOfSlots) {
 			if(getShortlistCount(i)==0) foremostElement = (foremostElement+1)%noOfSlots;
 			else if(getShortlistCount(i)==1) {
                 //gesture execute
