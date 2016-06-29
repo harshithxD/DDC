@@ -49,8 +49,10 @@ public class ReceiveDataThread extends Thread {
             threshold = new int[noOfGestures];
             // initialising the 11 gestures
 
+            // initialising the 11 gestures
+
             indx=0;
-            array = readingsGenerate(new int[] {14,13,18,15,12},new int[] {76,84,88,81,82});
+            array = readingsGenerate(new int[] {14,13,18,15,12,0,0,0,0,35,0},new int[] {76,84,88,81,82,0,0,0,0,35,0});
             a[indx] = new DynamicGesture(array.length);
 
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
@@ -59,7 +61,9 @@ public class ReceiveDataThread extends Thread {
 
             indx=1;
 
-            array = readingsGenerate(new int[]{2},new int[]{3});
+            array = readingsGenerate(new int[]{28,77,77,76,94,0,0,0,0,0,0},new int[]{28,77,77,76,94,201,0,0,0,0,0});
+            setValue(array,0,5,201);
+            lineDraw(array, 0, 0, 51, 5, false); lineDraw(array, 50, -50, 101, 5, true); lineDraw(array, 150, 50, 51, 5, false);
             a[indx] = new DynamicGesture(array.length);
 
             cons = new int[] {1,1,1,1,1,1,0,0,1,1,0};
@@ -68,7 +72,7 @@ public class ReceiveDataThread extends Thread {
             threshold[indx] = 40;
 
             indx=2;
-            array = readingsGenerate(new int [] {14,13,18,15,12},new int [] {23,75,90,13,8});
+            array = readingsGenerate(new int [] {14,13,18,15,12,0,0,0,0,0,0},new int [] {23,75,90,13,8,0,0,0,0,0,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -78,7 +82,7 @@ public class ReceiveDataThread extends Thread {
             threshold[indx] = 40;
 
             indx=3;
-            array = readingsGenerate(new int [] {14,13,18,15,12},new int [] {2,11,2,10,1});
+            array = readingsGenerate(new int [] {14,13,18,15,12,0,0,0,0,0,0},new int [] {52,11,2,10,1,0,0,0,0,0,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -88,7 +92,7 @@ public class ReceiveDataThread extends Thread {
             threshold[indx] = 40;
 
             indx=4;
-            array = readingsGenerate(new int[]{2},new int[]{3});
+            array = readingsGenerate(new int[]{14,13,18,15,12,0,0,0,0,35,0},new int[]{47,5,5,5,93,0,0,0,0,35,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -99,7 +103,7 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=5;
-            array = readingsGenerate(new int [] {14,13,18,15,12}	,new int [] {47,5,5,5,93});
+            array = readingsGenerate(new int [] {47,5,5,5,93,0,0,0,-35,0,0}	,new int [] {71,3,14,89,81,0,0,0,-35,0,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -110,8 +114,9 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=6;
-            array = readingsGenerate(new int[]{2},new int[]{3});
-
+            array = readingsGenerate(new int[]{47,5,5,5,93,0,0,0,-35,0,0},new int[]{47,5,5,5,93,201,0,0,-35,0,0});//LD
+            setValue(array,0,5,201);
+            lineDraw(array, 0, 0, 51, 5, false); lineDraw(array, 50, -50, 101, 5, true); lineDraw(array, 150, 50, 51, 5, false);
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -122,7 +127,9 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=7;
-            array = readingsGenerate(new int[]{2},new int[]{3});
+            array = readingsGenerate(new int[]{47,5,5,5,93,0,0,0,0,35,0},new int[]{47,5,5,5,93,201,0,0,0,35,0});
+            setValue(array,0,5,201);
+            lineDraw(array, 0, 0, 51, 5, false); lineDraw(array, 50, -50, 101, 5, true); lineDraw(array, 150, 50, 51, 5, false);
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -133,7 +140,7 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=8;
-            array = readingsGenerate(new int [] {14,13,18,15,12},new int [] {47,81,21,15,8});
+            array = readingsGenerate(new int [] {14,13,18,15,12,0,0,0,0,35,0},new int [] {47,81,21,15,8,0,0,0,0,35,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -144,7 +151,7 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=9;
-            array = readingsGenerate(new int [] {76,84,88,81,82},new int [] {14,5,80,60,75});
+            array = readingsGenerate(new int [] {76,84,88,81,82,0,0,0,0,35,0},new int [] {14,5,80,60,75,0,0,0,0,35,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -155,7 +162,7 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=10;
-            array = readingsGenerate(new int [] {14,5,80,60,75},new int [] {28,77,77,76,94});
+            array = readingsGenerate(new int [] {14,5,80,60,75,0,0,0,0,35,0},new int [] {28,77,77,76,94,0,0,0,0,35,0});
 
             a[indx] = new DynamicGesture(array.length);
             cons = new int[] {1,1,1,1,1,0,0,0,0,1,0};
@@ -165,7 +172,7 @@ public class ReceiveDataThread extends Thread {
 
 
             indx=11;
-            array = readingsGenerate(new int [] {14,5,80,60,75},new int [] {76,84,88,81,82});
+            array = readingsGenerate(new int [] {14,5,80,60,75,0,0,0,0,35,0},new int [] {76,84,88,81,82,0,0,0,0,35,0});
 
             a[indx] = new DynamicGesture(array.length);
 
@@ -174,7 +181,8 @@ public class ReceiveDataThread extends Thread {
 //            a[indx].printData();
             threshold[indx] = 40;
 
-            threshold = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
+
+            threshold = new int[]{40,40,40,40,40,40,40,40,40,40,40,40};
             DynamicQueue q = new DynamicQueue(a,threshold);
             Live dynamiclive = new Live();
 
@@ -198,7 +206,7 @@ public class ReceiveDataThread extends Thread {
                         i = q.proceedExecution();
                         if (i != -1) {
                             Looper.prepare();
-                            handler.sendMessageDelayed(handler.obtainMessage(Constants.READ_STATUS, readStatus, i, null), 10000);
+//                            handler.sendMessageDelayed(handler.obtainMessage(Constants.READ_STATUS, readStatus, i, null), 10000);
                             L.m("Gesture " + i + " is executed");
                             q.gestureStatusPrint();
                             Looper.loop();
@@ -269,30 +277,21 @@ public class ReceiveDataThread extends Thread {
         }
     }
 
-    public static int[][] readingsGenerate(int[] low,int[] high){
+    public int[][] readingsGenerate(int[] low,int[] high){
         int size=0;
-        for(int i=0;i<5;i++){
+        for(int i=0;i<low.length;i++){
             int diff=high[i]-low[i];
             if(diff>size){
                 size=diff;
             }
         }
         //now size = maximum difference between low and high values
-        int [] [] array=new int[size][11];
-        float size2=size-1;
-        for(int i=0;i<size;i++){
-            array[i][0]=low[0]+(int)((high[0]-low[0])*(i/size2));
-            array[i][1]=low[1]+(int)((high[1]-low[1])*(i/size2));
-            array[i][2]=low[2]+(int)((high[2]-low[2])*(i/size2));
-            array[i][3]=low[3]+(int)((high[3]-low[3])*(i/size2));
-            array[i][4]=low[4]+(int)((high[4]-low[4])*(i/size2));
-
-            array[i][5]=0;
-            array[i][6]=0;
-            array[i][7]=0;
-            array[i][8]=0;
-            array[i][9]=0;
-            array[i][10]=0;
+        int [] [] array=new int[size+1][low.length];
+        float size2=size;
+        for(int i=0;i<size+1;i++){
+            for (int j=0;j<low.length ; j++) {
+                array[i][j]=low[j]+(int)((high[j]-low[j])*(i/size2));
+            }
         }
         return array;
     }

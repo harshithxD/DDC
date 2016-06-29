@@ -14,7 +14,7 @@ class DynamicQueue{
 	public int latestElement = 0;
 	public int foremostElement = 0;
 	public int[] threshold;
-	public double alterFactor = -1;
+	public double alterFactor = -0.5;
 
 	public DynamicQueue(DynamicGesture []gest,int[] threshold){
 		gesture = gest.clone();
@@ -130,10 +130,10 @@ class DynamicQueue{
 			int[][] gestarraytemp = validSensorArrayComp(i);
 			
 			x.arrayInput(gestarraytemp, arraytemp);
-			dtwGap[slotNo][i].add( Math.max( 0.0, ((double)(x.sdtwDistance() + dtwGap[slotNo][i].size()*alterFactor)) ) );
+			dtwGap[slotNo][i].add( Math.max( 0.0, (x.sdtwDistance() + dtwGap[slotNo][i].size()*alterFactor)) );
 		}
 		for (int i=0; i<noOfGestures; i++) {
-			if((int)dtwGap[slotNo][i].get(dtwGap[slotNo][i].size()-1) >=threshold[i]) shortlist[slotNo][i] = false;
+			if((new Double((double)dtwGap[slotNo][i].get(dtwGap[slotNo][i].size()-1))).intValue() >=threshold[i]) shortlist[slotNo][i] = false;
 		}
 
 	}
@@ -153,7 +153,7 @@ class DynamicQueue{
 
 	public int proceedExecution(){
         int no;
-//        no = Math.max((latestElement - 20)%noOfSlots,foremostElement);
+       no = Math.max((latestElement - 20),foremostElement);
         for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
 			if(getShortlistCount(i)==0) foremostElement = (foremostElement+1)%noOfSlots;
 			else if(getShortlistCount(i)==1) {
@@ -185,8 +185,9 @@ class DynamicQueue{
 		System.out.print('\n');
 		System.out.println("DTW Status:");
 		for (int i=0; i<noOfGestures; i++) {
+            System.out.print("Gesture " + i + " : ");
 			for (int j=0; j<noOfSlots; j++) {
-				System.out.print(dtwGap[j][i] + " ");
+				System.out.print(j + " - " + dtwGap[j][i] + " ");
 			}
 			System.out.print('\n');			
 		}

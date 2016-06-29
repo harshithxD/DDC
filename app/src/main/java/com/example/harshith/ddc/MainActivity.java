@@ -3,6 +3,7 @@ package com.example.harshith.ddc;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -87,6 +88,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkBTState() {
+//        if(checkSelfPermission("android.permission.READ_EXTERNAL_STORAGE") == PackageManager.PERMISSION_DENIED){
+//            requestPermissions(new String[]{"android.permission.READ_EXTERNAL_STORAGE"},1);
+//        }e
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter == null) {
             Toast.makeText(this,"This device doesn't support bluetooth.",Toast.LENGTH_SHORT).show();

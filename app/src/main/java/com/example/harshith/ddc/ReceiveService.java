@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -21,6 +22,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
@@ -59,11 +62,13 @@ public class ReceiveService extends Service {
                         Toast.makeText(getBaseContext(),"Gesture " + message.arg2 + " is executed",Toast.LENGTH_SHORT).show();
                         switch(message.arg2) {
                             case 0:
-
+                                home();
                                 break;
                             case 1:
+                                back();
                                 break;
                             case 2:
+
                                 break;
                             case 3:
 
@@ -75,9 +80,10 @@ public class ReceiveService extends Service {
                                 audioPlayPause();
                                 break;
                             case 6:
-
+                                nextSong();
                                 break;
                             case 7:
+                                previousSong();
                                 break;
                             case 8:
                                 okGoogle();
@@ -86,9 +92,10 @@ public class ReceiveService extends Service {
                                 openCamera();
                                 break;
                             case 10:
-
+                                cameraClick();
                                 break;
                             case 11:
+                                gallery();
                                 break;
                             default:
                                 break;
@@ -127,6 +134,29 @@ public class ReceiveService extends Service {
 
     }
 
+    public void back(){
+        Thread t= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Instrumentation inst = new Instrumentation();
+                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+                }
+                catch (Exception e){
+
+                }
+            }
+        });
+        t.start();
+    }
+    public void home(){
+        inputKeyEvent("" + KeyEvent.KEYCODE_HOME);
+    }
+    public void nowOnTap(){
+        inputLongPressKeyEvent("" + KeyEvent.KEYCODE_HOME);
+    }
+
+
     public void openCamera(){
         Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -141,6 +171,38 @@ public class ReceiveService extends Service {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (Exception e){ Log.i(TAG, "Unable to launch camera: " + e); }
+    }
+
+    public void cameraClick(){
+        inputKeyEvent("" + KeyEvent.KEYCODE_CAMERA);
+    }
+
+    public void gallery(){
+        if(checkSelfPermission("android.permission.READ_EXTERNAL_STORAGE") == PackageManager.PERMISSION_DENIED){
+            L.s(getBaseContext(),"Please grant Permission to read storage data");
+        }
+        else {
+            // Get last taken photo
+            String[] projection = new String[]{
+                    MediaStore.Images.ImageColumns._ID,
+                    MediaStore.Images.ImageColumns.DATA,
+                    MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                    MediaStore.Images.ImageColumns.DATE_TAKEN,
+                    MediaStore.Images.ImageColumns.MIME_TYPE
+            };
+            final Cursor cursor = getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                            null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+            // Open in Gallery
+            if (cursor.moveToFirst()) {
+                String imageLocation = cursor.getString(1);
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse("file://" + imageLocation), "image/*");
+                startActivity(intent);
+            }
+        }
     }
 
     public void dialPhoneNumber(String phoneNumber) {
@@ -168,6 +230,15 @@ public class ReceiveService extends Service {
         startActivity(intent);
     }
 
+
+
+
+    public void openMusicPlayer(){
+        Intent intent = new Intent();
+        ComponentName comp = new ComponentName("com.android.music", "com.android.music.MusicBrowserActivity");
+        intent.setComponent(comp);
+        startActivity(intent);
+    }
     public void audioPlayPause(){
         AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
         KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
@@ -176,57 +247,57 @@ public class ReceiveService extends Service {
         audioManager.dispatchMediaKeyEvent(upEvent);
     }
 
-    public void CameraClick(){
-        Thread t= new Thread(new Runnable() {
+    public void nextSong(){
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
+        audioManager.dispatchMediaKeyEvent(downEvent);
+        KeyEvent upEvent = new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_NEXT);
+        audioManager.dispatchMediaKeyEvent(upEvent);
+    }
+    public void previousSong(){
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        audioManager.dispatchMediaKeyEvent(downEvent);
+        KeyEvent upEvent = new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        audioManager.dispatchMediaKeyEvent(upEvent);
+    }
+
+    public static void inputKeyEvent(final String keyCodeString) {
+        Thread thread = new Thread(new Runnable() {
+
             @Override
             public void run() {
+                int keyCode = Integer.parseInt(keyCodeString);
                 try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_CAMERA);
-                }
-                catch (Exception e){
-
+                    Process processKeyEvent = Runtime.getRuntime().exec("/system/xbin/su");
+                    DataOutputStream os = new DataOutputStream(processKeyEvent.getOutputStream());
+                    os.writeBytes("input keyevent " + keyCode + "\n");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
-        t.start();
+        thread.start();
+
     }
-    public void VolumeUp(){
-        Thread t= new Thread(new Runnable() {
+
+    public static void inputLongPressKeyEvent(final String keyCodeString) {
+        Thread thread = new Thread(new Runnable() {
+
             @Override
             public void run() {
+                int keyCode = Integer.parseInt(keyCodeString);
                 try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_UP);
-                }
-                catch (Exception e){
-
+                    Process processKeyEvent = Runtime.getRuntime().exec("/system/xbin/su");
+                    DataOutputStream os = new DataOutputStream(processKeyEvent.getOutputStream());
+                    os.writeBytes("input keyevent --longpress " + keyCode + "\n");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
-        t.start();
-    }
-    public void VolumeDown(){
-        Thread t= new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_DOWN);
-                }
-                catch (Exception e){
+        thread.start();
 
-                }
-            }
-        });
-        t.start();
-    }
-
-    public void openMusicPlayer(){
-        Intent intent = new Intent();
-        ComponentName comp = new ComponentName("com.android.music", "com.android.music.MusicBrowserActivity");
-        intent.setComponent(comp);
-        startActivity(intent);
     }
 }
 
