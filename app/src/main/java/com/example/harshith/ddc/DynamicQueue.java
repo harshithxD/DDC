@@ -1,19 +1,20 @@
 package com.example.harshith.ddc;
 
-import java.lang.reflect.Array;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 class DynamicQueue{
 	public int noOfSlots = 2000;
 	public int noOfGestures;
 	public DynamicGesture [] gesture;
-	public int [][] dtwGap;
+	public ArrayList [][] dtwGap;
 	public Live []liveElement;
 	public boolean [][]shortlist;
 
 	public int latestElement = 0;
 	public int foremostElement = 0;
 	public int[] threshold;
+	public double alterFactor = -1;
 
 	public DynamicQueue(DynamicGesture []gest,int[] threshold){
 		gesture = gest.clone();
@@ -33,7 +34,12 @@ class DynamicQueue{
 			}
 		}
 
-		dtwGap = new int[noOfSlots][noOfGestures];
+		dtwGap = new ArrayList[noOfSlots][noOfGestures];
+		for (int i=0; i<noOfSlots; i++) {
+			for(int j=0; j<noOfGestures; j++){
+				dtwGap[i][j] = new ArrayList();
+			}
+		}
 	}
 
 	public void overflowCheck(){
@@ -124,7 +130,7 @@ class DynamicQueue{
 			int[][] gestarraytemp = validSensorArrayComp(i);
 			
 			x.arrayInput(gestarraytemp, arraytemp);
-			dtwGap[slotNo][i] = x.sdtwDistance();
+			dtwGap[slotNo][i].add( Math.max( 0.0, ((double)(x.sdtwDistance() + dtwGap[slotNo][i].size()*alterFactor)) ) );
 		}
 		for (int i=0; i<noOfGestures; i++) {
 			if(dtwGap[slotNo][i]>=threshold[i]) shortlist[slotNo][i] = false;
