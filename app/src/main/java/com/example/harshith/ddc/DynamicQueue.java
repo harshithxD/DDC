@@ -133,7 +133,7 @@ class DynamicQueue{
 			dtwGap[slotNo][i].add( Math.max( 0.0, ((double)(x.sdtwDistance() + dtwGap[slotNo][i].size()*alterFactor)) ) );
 		}
 		for (int i=0; i<noOfGestures; i++) {
-			if(dtwGap[slotNo][i]>=threshold[i]) shortlist[slotNo][i] = false;
+			if((int)dtwGap[slotNo][i].get(dtwGap[slotNo][i].size()-1) >=threshold[i]) shortlist[slotNo][i] = false;
 		}
 
 	}
