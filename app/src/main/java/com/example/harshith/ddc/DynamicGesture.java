@@ -2,11 +2,12 @@ package com.example.harshith.ddc;
 
 class DynamicGesture extends Gesture {
 
-	public int dataPoints = 5;
+	public int dataPoints;
 	public int [][] point;
 	public boolean [] consider;
 
-	public DynamicGesture(){
+	public DynamicGesture(int dataPt){
+		dataPoints = dataPt;
 		point = new int [dataPoints][sensors];
 		consider = new boolean[sensors];
 		/*for (int i=0; i<sensors; i++) {

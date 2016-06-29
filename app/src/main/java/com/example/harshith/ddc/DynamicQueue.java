@@ -1,7 +1,7 @@
 package com.example.harshith.ddc;
 
 class DynamicQueue{
-	public int noOfSlots = 5000;
+	public int noOfSlots = 2000;
 	public int noOfGestures;
 	public DynamicGesture [] gesture;
 	public int [][] dtwGap;
@@ -110,7 +110,7 @@ class DynamicQueue{
 	}	
 
 	public void processLive(int slotNo, int livesTailNo){
-		int threshold = 5;
+		int threshold = 30;
 		
 		DTW x;
 
@@ -139,8 +139,9 @@ class DynamicQueue{
 		for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
 			if(getShortlistCount(i)==0) foremostElement = (foremostElement+1)%noOfSlots;
 			else if(getShortlistCount(i)==1) {
-				//gesture execute
-				return firstShortlistGestureIndex(foremostElement);
+                //gesture execute
+				System.out.println(foremostElement);
+                return firstShortlistGestureIndex(foremostElement);
 //				foremostElement = (foremostElement+1)%noOfSlots;
 			}
 			else break;
@@ -171,16 +172,16 @@ class DynamicQueue{
 			}
 			System.out.print('\n');			
 		}
-		System.out.println("Gesture Status:");
-		for (int i=0; i<noOfGestures; i++) {
-			for (int j=0; j<noOfSlots; j++) {
-
-				int d=0;
-				if(shortlist[j][i]) d=1;
-				System.out.print(d + " ");
-			}
-			System.out.print('\n');			
-		}
-		System.out.println(foremostElement + " " + latestElement);		
+//		System.out.println("Gesture Status:");
+//		for (int i=0; i<noOfGestures; i++) {
+//			for (int j=0; j<noOfSlots; j++) {
+//
+//				int d=0;
+//				if(shortlist[j][i]) d=1;
+//				System.out.print(d + " ");
+//			}
+//			System.out.print('\n');
+//		}
+//		System.out.println(foremostElement + " " + latestElement);
 	}
 }

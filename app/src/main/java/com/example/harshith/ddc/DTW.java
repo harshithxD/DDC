@@ -3,7 +3,7 @@ package com.example.harshith.ddc;
 import java.util.Scanner;
 
 class DTW{
-	public int m; public int n;
+	public int m; public int n,w;
 	public int [][]distance; public int [][]minAccDist;
 
 	public void arrayInput(int []arr1, int []arr2){
@@ -38,10 +38,15 @@ class DTW{
 		distanceProcess();
 		
 		minAccDist = new int[m][n];
+		for(int i = 0;i < m; i++){
+			for(int j = 0 ; j < n;j++){
+				minAccDist[i][j] = 0;
+			}
+		}
 
 		minAccDist[0][0] = distance[0][0];
 
-		int w = 65536; // set window here
+		w = 2000000; // set window here
 		w=Math.max(w,Math.abs(m-n));
 
 		for (int i=1; i<Math.min(m,w); i++) {
