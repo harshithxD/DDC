@@ -2,44 +2,41 @@ package com.example.harshith.ddc;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.*;
 
 class DynamicQueue{
-	public int noOfSlots = 2000;
+	//public int noOfSlots = 2000;
 	public int noOfGestures;
 	public DynamicGesture [] gesture;
-	public ArrayList [][] dtwGap;
-	public Live []liveElement;
-	public boolean [][]shortlist;
+	public LinkedList <ArrayList [] > dtwGap;
+	public LinkedList <Live> liveElement;
+	public LinkedList <Boolean [] > shortlist;
 
-	public int latestElement = 0;
-	public int foremostElement = 0;
 	public int[] threshold;
-	public double alterFactor = -0.5;
+	public double alterFactor = -1;
 
-	public DynamicQueue(DynamicGesture []gest,int[] threshold){
+	public DynamicQueue(DynamicGesture []gest, int[] threshold){
 		gesture = gest.clone();
 		noOfGestures = gesture.length;
 		this.threshold = threshold.clone();
 
-		liveElement = new Live[noOfSlots];
-		for (int i=0; i<noOfSlots; i++) {
-			liveElement[i] = new Live();
-		}
+		liveElement = new LinkedList <Live> ();
 
-		shortlist = new boolean[noOfSlots][noOfGestures];
+		shortlist = new LinkedList <Boolean []> ();
 
-		for (int i=0; i<noOfSlots; i++) {
+		/*for (int i=0; i<noOfSlots; i++) {
 			for (int j=0; j<noOfGestures; j++) {
 				shortlist[i][j] = true;
 			}
-		}
+		}*/
 
-		dtwGap = new ArrayList[noOfSlots][noOfGestures];
-		for (int i=0; i<noOfSlots; i++) {
+		dtwGap = new LinkedList <ArrayList []>();
+
+		/*for (int i=0; i<noOfSlots; i++) {
 			for(int j=0; j<noOfGestures; j++){
 				dtwGap[i][j] = new ArrayList();
 			}
-		}
+		}*/
 	}
 
 	public void overflowCheck(){
@@ -53,27 +50,30 @@ class DynamicQueue{
 	}
 
 	public void updateQueue(Live live){
-		liveElement[latestElement] = new Live(live);
-		for (int i=0; i<noOfGestures; i++) {
-			shortlist[latestElement][i] = true;
-		}
-		latestElement = (latestElement+1)%noOfSlots;
 
-		overflowCheck();
+		liveElement.add(live);
+		//[latestElement] = new Live(live);
+		Boolean [] trueBool = new Boolean[noOfGestures];
+		for (int i=0; i<noOfGestures; i++) {
+			trueBool[i] = true;
+		}
+		shortlist.add(trueBool);
+
+		//overflowCheck();
 	}
 
-	public int getShortlistCount(int slotNo){
+	public int getShortlistCount(){
 		int count = 0;
 		for (int i=0; i<noOfGestures; i++) {
-			if(shortlist[slotNo][i]) count++;
+			if(shortlist.getFirst()[i]) count++;
 		}
 		return count;
 	}
 
-	public int firstShortlistGestureIndex(int slotNo){
+	public int firstShortlistGestureIndex(){
 		int i;
 		for (i=0; i<noOfGestures; i++) {
-			if(shortlist[slotNo][i]) break;
+			if(shortlist.getFirst()[i]) break;
 		}
 		return i;
 	}
@@ -86,16 +86,15 @@ class DynamicQueue{
 
 	public int[][] liveTempArrayComp(int slotNo, int livesTailNo, int gestNo){
 		
-		int count = 0;
-		for (int i=slotNo; i!=livesTailNo; i=(i+1)%noOfSlots){count++;}
+		int count = livesTailNo - slotNo;
 		
 		int[][] x = new int[count][gesture[gestNo].getConsiderCount()];
 
 		int index = 0;
-		for (int i=0; i<liveElement[slotNo].sensors; i++){
+		for (int i=0; i<liveElement.get(slotNo).sensors; i++){
 			if(gesture[gestNo].consider[i]){
 				for (int j=0; j<count; j++) {
-					x[j][index] = liveElement[(j+slotNo)%noOfSlots].reading[i]; //gesture[gestNo].point[j][i];
+					x[j][index] = liveElement.get(j+slotNo).reading[i]; //gesture[gestNo].point[j][i];
 				}
 				index++;
 			}
@@ -130,10 +129,10 @@ class DynamicQueue{
 			int[][] gestarraytemp = validSensorArrayComp(i);
 			
 			x.arrayInput(gestarraytemp, arraytemp);
-			dtwGap[slotNo][i].add( Math.max( 0.0, (x.sdtwDistance() + dtwGap[slotNo][i].size()*alterFactor)) );
+			dtwGap.get(slotNo)[i].add( Math.max( 0.0, ((double)(x.sdtwDistance() + dtwGap.get(slotNo)[i].size()*alterFactor)) ) );
 		}
 		for (int i=0; i<noOfGestures; i++) {
-			if((new Double((double)dtwGap[slotNo][i].get(dtwGap[slotNo][i].size()-1))).intValue() >=threshold[i]) shortlist[slotNo][i] = false;
+			if( (new Double((double)dtwGap.get(slotNo)[i].get(dtwGap.get(slotNo)[i].size()-1)).intValue() ) >=threshold[i]) shortlist.get(slotNo)[i] = false;
 		}
 
 	}
@@ -146,20 +145,24 @@ class DynamicQueue{
 //        else {
 //            no = (latestElement - 20)%noOfSlots;
 //        }
-		for (int i=foremostElement;i != latestElement ; i=(i+1)%noOfSlots) {
-			processLive(i,latestElement);
+		for (int i=0; i < liveElement.size(); i++) {
+			processLive(i,liveElement.size());
 		}
 	}
 
 	public int proceedExecution(){
-        int no;
-       no = Math.max((latestElement - 20),foremostElement);
-        for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
-			if(getShortlistCount(i)==0) foremostElement = (foremostElement+1)%noOfSlots;
-			else if(getShortlistCount(i)==1) {
+        int stopScan = 20;
+//        no = Math.max((latestElement - 20)%noOfSlots,foremostElement);
+        for (int i=0; i<Math.max(0,liveElement.size() - stopScan); i++ ){
+			if(getShortlistCount()==0){
+				liveElement.removeFirst();
+				shortlist.removeFirst();
+				dtwGap.removeFirst();
+			}
+			else if(getShortlistCount()==1) {
                 //gesture execute
-				System.out.println(foremostElement);
-                return firstShortlistGestureIndex(foremostElement);
+				System.out.println();
+                return firstShortlistGestureIndex();
 //				foremostElement = (foremostElement+1)%noOfSlots;
 			}
 			else break;
@@ -171,9 +174,9 @@ class DynamicQueue{
 	public void print(){
 		System.out.print('\n');
 		System.out.println("Live Elements:");
-		for (int i=0; i<liveElement[0].sensors; i++) {
-			for (int j=0; j<noOfSlots; j++) {
-				System.out.print(liveElement[j].reading[i] + " ");
+		for (int i=0; i<liveElement.get(0).sensors; i++) {
+			for (int j=0; j<liveElement.size(); j++) {
+				System.out.print(liveElement.get(j).reading[i] + " ");
 			}
 			System.out.print('\n');			
 		}
@@ -185,9 +188,8 @@ class DynamicQueue{
 		System.out.print('\n');
 		System.out.println("DTW Status:");
 		for (int i=0; i<noOfGestures; i++) {
-            System.out.print("Gesture " + i + " : ");
-			for (int j=0; j<noOfSlots; j++) {
-				System.out.print(j + " - " + dtwGap[j][i] + " ");
+			for (int j=0; j<dtwGap.size(); j++) {
+				System.out.print(dtwGap.get(j)[i] + " ");
 			}
 			System.out.print('\n');			
 		}
