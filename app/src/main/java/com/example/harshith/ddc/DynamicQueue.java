@@ -147,8 +147,8 @@ class DynamicQueue{
 
 	public int proceedExecution(){
         int no;
-        no = Math.max((latestElement - 20)%noOfSlots,foremostElement);
-        for (int i=foremostElement; i!=no; i=(i+1)%noOfSlots) {
+//        no = Math.max((latestElement - 20)%noOfSlots,foremostElement);
+        for (int i=foremostElement; i!=latestElement; i=(i+1)%noOfSlots) {
 			if(getShortlistCount(i)==0) foremostElement = (foremostElement+1)%noOfSlots;
 			else if(getShortlistCount(i)==1) {
                 //gesture execute
