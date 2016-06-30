@@ -182,7 +182,7 @@ public class ReceiveDataThread extends Thread {
             threshold[indx] = 40;
 
 
-            threshold = new int[]{40,40,40,40,40,40,40,40,40,40,40,40};
+            threshold = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
             DynamicQueue q = new DynamicQueue(a,threshold);
             Live dynamiclive = new Live();
 
@@ -191,7 +191,6 @@ public class ReceiveDataThread extends Thread {
             int bytes = -1;
             String readMessage;
             int i, counter = 1;
-            convert();
             while(true) {
                 bytes = inputStream.read(buffer);
                 readStatus = Constants.READ_STATUS_OK;

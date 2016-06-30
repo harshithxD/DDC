@@ -53,11 +53,15 @@ class DynamicQueue{
 
 		liveElement.add(live);
 		//[latestElement] = new Live(live);
+        dtwGap.add((new ArrayList[noOfGestures]));
 		Boolean [] trueBool = new Boolean[noOfGestures];
 		for (int i=0; i<noOfGestures; i++) {
-			trueBool[i] = true;
+			trueBool[i] = new Boolean(true);
+            dtwGap.getLast()[i] = new ArrayList();
 		}
 		shortlist.add(trueBool);
+
+
 
 		//overflowCheck();
 	}
@@ -129,10 +133,16 @@ class DynamicQueue{
 			int[][] gestarraytemp = validSensorArrayComp(i);
 			
 			x.arrayInput(gestarraytemp, arraytemp);
-			dtwGap.get(slotNo)[i].add( Math.max( 0.0, ((double)(x.sdtwDistance() + dtwGap.get(slotNo)[i].size()*alterFactor)) ) );
+            dtwGap.get(slotNo)[i].add( Math.max( 0.0, x.sdtwDistance() + dtwGap.get(slotNo)[i].size()*alterFactor));
+//            dtwGap.get(slotNo)[i].add(100.0);
 		}
 		for (int i=0; i<noOfGestures; i++) {
-			if( (new Double((double)dtwGap.get(slotNo)[i].get(dtwGap.get(slotNo)[i].size()-1)).intValue() ) >=threshold[i]) shortlist.get(slotNo)[i] = false;
+//            shortlist.add(new Boolean[noOfGestures]);
+
+			if( (new Double((double)dtwGap.get(slotNo)[i].get(dtwGap.get(slotNo)[i].size()-1)).intValue() ) >=threshold[i]) shortlist.get(slotNo)[i] = new Boolean(false);
+            else {
+                shortlist.get(slotNo)[i] = new Boolean(true);
+            }
 		}
 
 	}
