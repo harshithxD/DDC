@@ -182,7 +182,7 @@ public class ReceiveDataThread extends Thread {
             threshold[indx] = 40;
 
 
-            threshold = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
+            threshold = new int[]{10,10,10,10,10,10,10,10,10,10,10,10};
             LagQueue q = new LagQueue(a,threshold);
             Live dynamiclive = new Live();
 
@@ -204,11 +204,11 @@ public class ReceiveDataThread extends Thread {
                         q.processQueue();
                         i = q.proceedExecution();
                         if (i != -1) {
-                            Looper.prepare();
+//                            Looper.prepare();
 //                            handler.sendMessageDelayed(handler.obtainMessage(Constants.READ_STATUS, readStatus, i, null), 10000);
                             L.m("Gesture " + i + " is executed");
                             q.gestureStatusPrint();
-                            Looper.loop();
+//                            Looper.loop();
                         }
                     }
                     counter++;
@@ -279,7 +279,7 @@ public class ReceiveDataThread extends Thread {
     public int[][] readingsGenerate(int[] low,int[] high){
         int size=0;
         for(int i=0;i<low.length;i++){
-            int diff=high[i]-low[i];
+            int diff=Math.abs(high[i]-low[i]);
             if(diff>size){
                 size=diff;
             }

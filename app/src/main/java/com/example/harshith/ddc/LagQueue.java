@@ -12,13 +12,17 @@ class LagQueue{
 	public int [] threshold;
 	public int lowerBoundary = -200;
 	public int upperBoundary = -50;
-	
+
 	public LagQueue(DynamicGesture []gest, int[] threshold){
-		gesture = gest.clone();		
+		gesture = gest.clone();
 		noOfGestures = gesture.length;
 		this.threshold = threshold.clone();
 
 		liveElement = new Live[noOfSlots];
+
+		for (int i=0; i<noOfSlots; i++) {
+			liveElement[i] = new Live();
+		}
 
 		shortlist = new boolean[noOfGestures];
 
@@ -42,7 +46,7 @@ class LagQueue{
 
 	public void updateQueue(Live live){
 		latestElement = (latestElement+1)%noOfSlots;
-		
+
 		liveElement[latestElement] = new Live(live);
 		for (int i=0; i<noOfGestures; i++) {
 			shortlist[i] = true;
@@ -73,19 +77,28 @@ class LagQueue{
 
 	}
 
+	public void arrayPrint(int [][]arr){
+		for (int j=0; j<arr[0].length; j++) {
+			for (int i=0; i<arr.length; i++) {
+				System.out.print(arr[i][j] + " ");
+			}
+			System.out.println();
+		}
+	}
+
 	public int[][] liveTempArrayComp(int slotNo, int gestNo){
-		
-		int[][] x = new int[latestElement - (lowerBoundary + slotNo)][gesture[gestNo].getConsiderCount()];
+
+		int[][] x = new int[ - (lowerBoundary + slotNo)][gesture[gestNo].getConsiderCount()];
 
 		int index = 0;
 		for (int i=0; i<liveElement[slotNo].sensors; i++){
 			if(gesture[gestNo].consider[i]){
-				for (int j = lowerBoundary + slotNo + latestElement; j < latestElement; j++) {
-					x[j - (lowerBoundary + slotNo + latestElement)][index] = liveElement[j].reading[i]; //gesture[gestNo].point[j][i];
+				for (int j = 0; j < - slotNo - lowerBoundary; j++) {
+					x[j][index] = liveElement[j + latestElement + lowerBoundary].reading[i]; //gesture[gestNo].point[j][i];
 				}
 				index++;
 			}
-		}		
+		}
 		return x;
 	}
 
@@ -102,9 +115,9 @@ class LagQueue{
 				index++;
 			}
 		}
-		
+
 		return x;
-	}	
+	}
 
 	public int arrayMin(int [] arr){
 		int mini = 1000000;
@@ -115,24 +128,25 @@ class LagQueue{
 	}
 
 	public int minDtwGapProcess(int gestNo){
-		
+
 		int [] dtwValues = new int[upperBoundary - lowerBoundary];
 
 		DTW x;
 		int [][] gestarraytemp = validSensorArrayComp(gestNo);
-
+		//arrayPrint(gestarraytemp);
+		//	arrayPrint(gestarraytemp);
+		//System.out.println();
 		for (int i = 0; i < upperBoundary - lowerBoundary; i++) {
 			x = new DTWtwoD();
-			
+
 			int [][] arraytemp = liveTempArrayComp(i, gestNo);
-			
 			x.arrayInput(gestarraytemp, arraytemp);
 			//dtwGap[slotNo][i].add( Math.max( 0.0, (x.sdtwDistance() + dtwGap[slotNo][i].size()*alterFactor)) );
 			dtwValues[i] = x.dtwDistance();
 		}
 
 		return arrayMin(dtwValues);
-	} 
+	}
 
 	public void processQueue(){
 
@@ -147,14 +161,15 @@ class LagQueue{
 			else shortlist[i] = false;
 		}
 
-		if(getShortlistCount()==0) latestElement = (latestElement+1)%noOfSlots;
+		if(getShortlistCount()==0){} //latestElement = (latestElement+1)%noOfSlots;
 		else if(getShortlistCount()==1) {
-            //gesture execute
+			//gesture execute
 			System.out.println(firstShortlistGestureIndex());
-            return firstShortlistGestureIndex();
+			return firstShortlistGestureIndex();
 		}
+
 		overflowCheck();
-        return -1;
+		return -1;
 	}
 
 	public void print(){
@@ -164,8 +179,9 @@ class LagQueue{
 			for (int j=0; j<noOfSlots; j++) {
 				System.out.print(liveElement[j].reading[i] + " ");
 			}
-			System.out.print('\n');			
+			System.out.print('\n');
 		}
+		System.out.println(latestElement);
 
 		gestureStatusPrint();
 	}
@@ -173,20 +189,12 @@ class LagQueue{
 	public void gestureStatusPrint(){
 		System.out.print('\n');
 		System.out.println("DTW Status:");
+
 		for (int i=0; i<noOfGestures; i++) {
-            System.out.print("Gesture " + i + " : " + minDtwGap[i]);
-			System.out.print('\n');			
+			System.out.print(minDtwGap[i] + " ");
 		}
-//		System.out.println("Gesture Status:");
-//		for (int i=0; i<noOfGestures; i++) {
-//			for (int j=0; j<noOfSlots; j++) {
-//
-//				int d=0;
-//				if(shortlist[j][i]) d=1;
-//				System.out.print(d + " ");
-//			}
-//			System.out.print('\n');
-//		}
-//		System.out.println(foremostElement + " " + latestElement);
+		System.out.print('\n');
+
 	}
+
 }
