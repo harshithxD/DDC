@@ -13,13 +13,18 @@ public class Constants {
     public static int READ_STATUS_OK = 0;
     public static int READ_STATUS_NOT_OK = 1;
 
+    public static String MUSIC_PLAYER = "Music Player";
     public static String PLAY_PAUSE = "Play/Pause";
     public static String OK_GOOGLE = "Ok Google";
     public static String OPEN_CAMERA = "Camera";
     public static String GOOGLE_NOW = "GoogleApp";
     public static String CAMERA_CLICK = "CameraClick";
-    public static String VOLUME_UP="VolumeUp";
-    public static String VOLUME_DOWN="VolumeDown";
+    public static String VOLUME_CONTROL="Volume Control";
     public static String END_CALL="EndCall";
+    public static  String HOME="Home";
+    public static String BACK = "Back";
+
+    public static int MODE_NORMAL = 0;
+    public static int MODE_VOLUME = 255;
 }
 

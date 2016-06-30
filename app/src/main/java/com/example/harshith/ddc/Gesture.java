@@ -4,13 +4,13 @@ package com.example.harshith.ddc;
 public class Gesture{
 
 	public int dataPoints = 50;
-	public int sensors = 10;
+	public int sensors = 11;
 	public int adcLevels = 2;
 	public int adcUpper = 0;
 	public int adcLower = 100;
-	public int mpuLevels = 3;
-	public int mpuUpper = 18000;
-	public int mpuLower = -18000;
+	public int mpuLevels = 100;
+	public int mpuUpper = 50;
+	public int mpuLower = -50;
 
 	public Gesture(){}
 

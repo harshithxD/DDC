@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         checkBTState();
 
         if(checkSelfPermission(android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED){
-            requestPermissions(new String[]{android.Manifest.permission.CALL_PHONE},1);
+            requestPermissions(new String[]{android.Manifest.permission.CALL_PHONE,"android.permission.READ_EXTERNAL_STORAGE"},1);
         }
 
         mPairedDevicesArrayAdapter.clear();

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -19,10 +20,13 @@ import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.CircularArray;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 import static android.content.ContentValues.TAG;
@@ -48,7 +52,7 @@ public class ReceiveService extends Service {
                     if(message.arg1 == Constants.CONNECTION_STATUS_OK){
                         Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
                         bluetoothSocket = (BluetoothSocket) message.obj;
-                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass);
+                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass, Constants.MODE_NORMAL);
                         receiveDataThread.start();
                     }
                     else if(message.arg1 == Constants.CONNECTION_STATUS_NOT_CONNECTED){
@@ -59,33 +63,50 @@ public class ReceiveService extends Service {
                     if (message.arg1 == Constants.READ_STATUS_OK) {
                         if (((String) message.obj).equals(Constants.OPEN_CAMERA)) {
                             openCamera();
-                            resumeReading();
+                            L.s(getBaseContext(), "Camera Open");
+                            resumeReading(message.arg2);
                         } else if (message.obj.equals(Constants.OK_GOOGLE)) {
                             okGoogle();
                             L.s(getBaseContext(), "Ok Google");
-                            resumeReading();
+                            resumeReading(message.arg2);
                         } else if (message.obj.equals(Constants.GOOGLE_NOW)) {
                             googleNow();
-                            resumeReading();
+                            resumeReading(message.arg2);
                         } else if (message.obj.equals(Constants.PLAY_PAUSE)) {
                             audioPlayPause();
-                            resumeReading();
+                            L.s(getBaseContext(), "Play/Pause");
+                            resumeReading(message.arg2);
                         } else if (message.obj.equals(Constants.CAMERA_CLICK)) {
-                            CameraClick();
-                            resumeReading();
-                        } else if (message.obj.equals(Constants.VOLUME_UP)) {
-                            VolumeUp();
-                            resumeReading();
-                        } else if (message.obj.equals(Constants.VOLUME_DOWN)) {
-                            VolumeDown();
-                            resumeReading();
-                        } else if (message.obj.equals(Constants.END_CALL)) {
-                            EndCall();
-                            resumeReading();
+                            cameraClick();
+                            L.s(getBaseContext(), "Picture Taken");
+                            resumeReading(message.arg2);
                         }
-                        else if(message.arg1 == Constants.READ_STATUS_NOT_OK){
-                            L.s(getBaseContext(),"Domini Disconnected");
+                        else if (message.obj.equals(Constants.END_CALL)) {
+                            endCall();
+                            L.s(getBaseContext(), "Call Ended");
+                            resumeReading(message.arg2);
                         }
+                        else if(message.obj.equals(Constants.MUSIC_PLAYER)){
+                            openMusicPlayer();
+                            L.s(getBaseContext(), "Music Player");
+                            resumeReading(message.arg2);
+                        }
+                        else if(message.obj.equals(Constants.HOME)){
+                            home();
+                            L.s(getBaseContext(), "Home");
+                            resumeReading(message.arg2);
+                        }
+                        else if(message.obj.equals(Constants.BACK)){
+                            back();
+                            L.s(getBaseContext(), "Back");
+                            resumeReading(message.arg2);
+                        }
+                        else if(message.obj.equals(Constants.VOLUME_CONTROL)){
+                            updateVolume((int) message.obj);
+                        }
+                    }
+                    else if(message.arg1 == Constants.READ_STATUS_NOT_OK){
+                        L.s(getBaseContext(),"Domini Disconnected");
                     }
                 }
             }
@@ -115,6 +136,25 @@ public class ReceiveService extends Service {
 
     }
 
+    public void updateVolume(int roll){
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int volume = ((roll + 50)/100)*maxVolume;
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,volume,AudioManager.FLAG_SHOW_UI);
+
+    }
+
+    public void home(){
+        inputKeyEvent("" + KeyEvent.KEYCODE_HOME);
+    }
+    public void back(){
+        inputKeyEvent("" + KeyEvent.KEYCODE_BACK);
+    }
+    public void nowOnTap(){
+        inputLongPressKeyEvent("" + KeyEvent.KEYCODE_HOME);
+    }
+
+
     public void openCamera(){
         Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -131,6 +171,38 @@ public class ReceiveService extends Service {
         } catch (Exception e){ Log.i(TAG, "Unable to launch camera: " + e); }
     }
 
+    public void cameraClick(){
+        inputKeyEvent("" + KeyEvent.KEYCODE_CAMERA);
+    }
+
+    public void gallery(){
+        if(checkSelfPermission("android.permission.READ_EXTERNAL_STORAGE") == PackageManager.PERMISSION_DENIED){
+            L.s(getBaseContext(),"Please grant Permission to read storage data");
+        }
+        else {
+            // Get last taken photo
+            String[] projection = new String[]{
+                    MediaStore.Images.ImageColumns._ID,
+                    MediaStore.Images.ImageColumns.DATA,
+                    MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                    MediaStore.Images.ImageColumns.DATE_TAKEN,
+                    MediaStore.Images.ImageColumns.MIME_TYPE
+            };
+            final Cursor cursor = getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                            null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+            // Open in Gallery
+            if (cursor.moveToFirst()) {
+                String imageLocation = cursor.getString(1);
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse("file://" + imageLocation), "image/*");
+                startActivity(intent);
+            }
+        }
+    }
+
     public void dialPhoneNumber(String phoneNumber) {
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse("tel:" + phoneNumber));
@@ -139,8 +211,8 @@ public class ReceiveService extends Service {
         }
     }
 
-    public void resumeReading(){
-        receiveDataThread = new ReceiveDataThread(bluetoothSocket,handler,globalClass);
+    public void resumeReading(int mode){
+        receiveDataThread = new ReceiveDataThread(bluetoothSocket,handler,globalClass,mode);
         receiveDataThread.start();
     }
 
@@ -156,6 +228,15 @@ public class ReceiveService extends Service {
         startActivity(intent);
     }
 
+
+
+
+    public void openMusicPlayer(){
+        Intent intent = new Intent();
+        ComponentName comp = new ComponentName("com.android.music", "com.android.music.MusicBrowserActivity");
+        intent.setComponent(comp);
+        startActivity(intent);
+    }
     public void audioPlayPause(){
         AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
         KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
@@ -164,65 +245,61 @@ public class ReceiveService extends Service {
         audioManager.dispatchMediaKeyEvent(upEvent);
     }
 
-    public void CameraClick(){
-        Thread t= new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_CAMERA);
-                }
-                catch (Exception e){
-
-                }
-            }
-        });
-        t.start();
+    public void nextSong(){
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
+        audioManager.dispatchMediaKeyEvent(downEvent);
+        KeyEvent upEvent = new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_NEXT);
+        audioManager.dispatchMediaKeyEvent(upEvent);
     }
-    public void VolumeUp(){
-        Thread t= new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_UP);
-                }
-                catch (Exception e){
-
-                }
-            }
-        });
-        t.start();
+    public void previousSong(){
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        audioManager.dispatchMediaKeyEvent(downEvent);
+        KeyEvent upEvent = new KeyEvent(KeyEvent.ACTION_UP,KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        audioManager.dispatchMediaKeyEvent(upEvent);
     }
-    public void VolumeDown(){
-        Thread t= new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_VOLUME_DOWN);
-                }
-                catch (Exception e){
 
-                }
-            }
-        });
-        t.start();
+    public void endCall(){
+        inputKeyEvent(KeyEvent.KEYCODE_ENDCALL+"");
     }
-    public void EndCall(){
-        Thread t= new Thread(new Runnable() {
+
+    public static void inputKeyEvent(final String keyCodeString) {
+        Thread thread = new Thread(new Runnable() {
+
             @Override
             public void run() {
+                int keyCode = Integer.parseInt(keyCodeString);
                 try {
-                    Instrumentation inst = new Instrumentation();
-                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENDCALL);
-                }
-                catch (Exception e){
-
+                    Process processKeyEvent = Runtime.getRuntime().exec("/system/xbin/su");
+                    DataOutputStream os = new DataOutputStream(processKeyEvent.getOutputStream());
+                    os.writeBytes("input keyevent " + keyCode + "\n");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
-        t.start();
+        thread.start();
+
+    }
+
+    public static void inputLongPressKeyEvent(final String keyCodeString) {
+        Thread thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int keyCode = Integer.parseInt(keyCodeString);
+                try {
+                    Process processKeyEvent = Runtime.getRuntime().exec("/system/xbin/su");
+                    DataOutputStream os = new DataOutputStream(processKeyEvent.getOutputStream());
+                    os.writeBytes("input keyevent --longpress " + keyCode + "\n");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
     }
 }
 
