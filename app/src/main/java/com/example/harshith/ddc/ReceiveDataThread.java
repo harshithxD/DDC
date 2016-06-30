@@ -2,6 +2,7 @@ package com.example.harshith.ddc;
 
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -31,7 +32,7 @@ public class ReceiveDataThread extends Thread {
         this.bluetoothSocket = bluetoothSocket;
         this.handler = handler;
         this.globalClass = globalClass;
-        stringBuilder = new StringBuilder();
+        
         this.mode = mode;
         a = new Gesture[8];
         for (int i = 0; i<8; i++) {
@@ -53,7 +54,7 @@ public class ReceiveDataThread extends Thread {
         a[q].updateFrame(hand);
 
         q=3; hand = new int [] {0,1,1,1,0,8,8,8,8,1,8};
-        // End Call
+        // Back
         a[q].updateFrame(hand);
 
         q=4; hand = new int [] {0,0,0,1,1,8,8,8,-1,8,8};
@@ -89,7 +90,7 @@ public class ReceiveDataThread extends Thread {
             int bytes = -1;
 
             Live staticLive = new Live();
-            int no = 50;
+            int no = 30;
             //StaticLive.print();
             int count = 0;
             int gestActive = -1; boolean stay = true;
@@ -98,16 +99,16 @@ public class ReceiveDataThread extends Thread {
                     bytes = inputStream.read(buffer);
                     readStatus = Constants.READ_STATUS_OK;
                     String readMessage = new String(buffer, 0, bytes);
-                    stringBuilder.append(readMessage);
-                    int endOfLineIndex = stringBuilder.indexOf("~");
+                    globalClass.getStringBuilder().append(readMessage);
+                    int endOfLineIndex = globalClass.getStringBuilder().indexOf("~");
                     if (endOfLineIndex > 0) {
-                        int startOfLineIndex = stringBuilder.indexOf("#");
+                        int startOfLineIndex = globalClass.getStringBuilder().indexOf("#");
                         if (startOfLineIndex > endOfLineIndex || startOfLineIndex == -1) {
                             startOfLineIndex = 0;
                         } else if (startOfLineIndex == 0) {
                             startOfLineIndex = 1;
                         }
-                        String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
+                        String dataIn = globalClass.getStringBuilder().substring(startOfLineIndex, endOfLineIndex);
 
                         String[] readingStrings = dataIn.split("\\+");
                         readings = new int[readingStrings.length];
@@ -125,7 +126,7 @@ public class ReceiveDataThread extends Thread {
                             testConvert += " " + reading;
                         }
                         L.m(testConvert);
-                        stringBuilder.delete(0, endOfLineIndex + 2);
+                        globalClass.getStringBuilder().delete(0, endOfLineIndex + 2);
 
                         if (count == no) {
                             Log.d("Gesture", "Gesture " + gestActive + " is activated");
@@ -137,7 +138,11 @@ public class ReceiveDataThread extends Thread {
                             } else if (gestActive == 1) {
                                 mode = Constants.MODE_VOLUME;
                                 Looper.prepare();
-                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.VOLUME_CONTROL).sendToTarget();
+                                Message msg = handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.VOLUME_CONTROL);
+                                Bundle bundle = new Bundle();
+                                bundle.putInt(Constants.VOLUME,readings[8]);
+                                msg.setData(bundle);
+                                handler.sendMessage(msg);
                                 Looper.loop();
                             } else if (gestActive == 2) {
                                 Looper.prepare();
@@ -145,19 +150,19 @@ public class ReceiveDataThread extends Thread {
                                 Looper.loop();
                             } else if (gestActive == 3) {
                                 Looper.prepare();
-                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.PLAY_PAUSE).sendToTarget();
+                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.BACK).sendToTarget();
                                 Looper.loop();
                             } else if (gestActive == 4) {
                                 Looper.prepare();
-                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.BACK).sendToTarget();
+                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.OPEN_CAMERA).sendToTarget();
                                 Looper.loop();
                             } else if (gestActive == 5) {
                                 Looper.prepare();
-                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.OPEN_CAMERA).sendToTarget();
+                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.CAMERA_CLICK).sendToTarget();
                                 Looper.loop();
                             } else if (gestActive == 6) {
                                 Looper.prepare();
-                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.CAMERA_CLICK).sendToTarget();
+                                handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.PLAY_PAUSE).sendToTarget();
                                 Looper.loop();
                             } else if (gestActive == 7) {
                                 Looper.prepare();
@@ -171,7 +176,7 @@ public class ReceiveDataThread extends Thread {
                         }
 
                         if (count < no) {
-                            if (readings.length >= 11) {
+                            if (readings.length == 11) {
                                 staticLive.update(readings);
                             }
                         }
@@ -196,16 +201,16 @@ public class ReceiveDataThread extends Thread {
                     bytes = inputStream.read(buffer);
                     readStatus = Constants.READ_STATUS_OK;
                     String readMessage = new String(buffer, 0, bytes);
-                    stringBuilder.append(readMessage);
-                    int endOfLineIndex = stringBuilder.indexOf("~");
+                    globalClass.getStringBuilder().append(readMessage);
+                    int endOfLineIndex = globalClass.getStringBuilder().indexOf("~");
                     if (endOfLineIndex > 0) {
-                        int startOfLineIndex = stringBuilder.indexOf("#");
+                        int startOfLineIndex = globalClass.getStringBuilder().indexOf("#");
                         if (startOfLineIndex > endOfLineIndex || startOfLineIndex == -1) {
                             startOfLineIndex = 0;
                         } else if (startOfLineIndex == 0) {
                             startOfLineIndex = 1;
                         }
-                        String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
+                        String dataIn = globalClass.getStringBuilder().substring(startOfLineIndex, endOfLineIndex);
 
                         String[] readingStrings = dataIn.split("\\+");
                         readings = new int[readingStrings.length];
@@ -223,19 +228,24 @@ public class ReceiveDataThread extends Thread {
                             testConvert += " " + reading;
                         }
                         L.m(testConvert);
-                        stringBuilder.delete(0, endOfLineIndex + 2);
+                        globalClass.getStringBuilder().delete(0, endOfLineIndex + 2);
                         if(readings.length == 11){
                             staticLive.update(readings);
                         }
                         if(!a[1].isInFrame(staticLive)){
                             mode = Constants.MODE_NORMAL;
                             Looper.prepare();
-                            handler.obtainMessage(Constants.READ_STATUS,readStatus,mode,null).sendToTarget();
+                            handler.obtainMessage(Constants.READ_STATUS,readStatus,mode,Constants.VOLUME_CONTROL).sendToTarget();
                             Looper.loop();
                         }
                         else {
+                            mode = Constants.MODE_VOLUME;
                             Looper.prepare();
-                            handler.obtainMessage(Constants.READ_STATUS,readStatus,mode,readings[8]).sendToTarget();
+                            Message msg = handler.obtainMessage(Constants.READ_STATUS, readStatus, mode, Constants.VOLUME_CONTROL);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(Constants.VOLUME,readings[8]);
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
                             Looper.loop();
                         }
                     }
@@ -252,16 +262,16 @@ public class ReceiveDataThread extends Thread {
     }
 
     public void convert(){
-        int endOfLineIndex = stringBuilder.indexOf("~");
+        int endOfLineIndex = globalClass.getStringBuilder().indexOf("~");
         if (endOfLineIndex > 0) {
-            int startOfLineIndex = stringBuilder.indexOf("#");
+            int startOfLineIndex = globalClass.getStringBuilder().indexOf("#");
             if (startOfLineIndex > endOfLineIndex || startOfLineIndex == -1) {
                 startOfLineIndex = 0;
             }
             else if (startOfLineIndex == 0) {
                 startOfLineIndex = 1;
             }
-            String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
+            String dataIn = globalClass.getStringBuilder().substring(startOfLineIndex, endOfLineIndex);
 
             String[] readingStrings = dataIn.split("\\+");
             readings = new int[readingStrings.length];
@@ -280,7 +290,7 @@ public class ReceiveDataThread extends Thread {
                 testConvert += " " + reading;
             }
             L.m(testConvert);
-            stringBuilder.delete(0, endOfLineIndex + 2);
+            globalClass.getStringBuilder().delete(0, endOfLineIndex + 2);
 
 //            int[] flex = new int[5];
 //            for (int i = 0; i != 5; i++) {

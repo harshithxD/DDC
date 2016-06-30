@@ -8,7 +8,7 @@ public class Gesture{
 	public int adcLevels = 2;
 	public int adcUpper = 0;
 	public int adcLower = 100;
-	public int mpuLevels = 100;
+	public int mpuLevels = 3;
 	public int mpuUpper = 50;
 	public int mpuLower = -50;
 

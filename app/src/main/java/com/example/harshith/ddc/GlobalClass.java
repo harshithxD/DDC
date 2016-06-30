@@ -17,4 +17,14 @@ public class GlobalClass extends Application {
     public Handler getProcessHandler() {
         return processHandler;
     }
+
+    StringBuilder stringBuilder = new StringBuilder();
+
+    public StringBuilder getStringBuilder() {
+        return stringBuilder;
+    }
+
+    public void setStringBuilder(StringBuilder stringBuilder) {
+        this.stringBuilder = stringBuilder;
+    }
 }

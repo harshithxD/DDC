@@ -64,7 +64,7 @@ public class StaticGesture extends Gesture {
 
 	public boolean isInFrame(Live live){
 		for (int i=0; i<sensors; i++) {
-			if(!((eFrame[i][0]<live.reading[i]) && (live.reading[i]<eFrame[i][1]))){
+			if(!((eFrame[i][0]<= live.reading[i]) && (live.reading[i] <= eFrame[i][1]))){
 				return false;
 			} 
 		}

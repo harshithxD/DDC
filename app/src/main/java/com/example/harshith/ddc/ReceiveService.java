@@ -61,7 +61,7 @@ public class ReceiveService extends Service {
                 }
                 else if (message.what == Constants.READ_STATUS) {
                     if (message.arg1 == Constants.READ_STATUS_OK) {
-                        if (((String) message.obj).equals(Constants.OPEN_CAMERA)) {
+                        if (message.obj.equals(Constants.OPEN_CAMERA)) {
                             openCamera();
                             L.s(getBaseContext(), "Camera Open");
                             resumeReading(message.arg2);
@@ -102,7 +102,8 @@ public class ReceiveService extends Service {
                             resumeReading(message.arg2);
                         }
                         else if(message.obj.equals(Constants.VOLUME_CONTROL)){
-                            updateVolume((int) message.obj);
+                            updateVolume(message.getData().getInt(Constants.VOLUME));
+                            resumeReading(Constants.MODE_VOLUME);
                         }
                     }
                     else if(message.arg1 == Constants.READ_STATUS_NOT_OK){
@@ -198,6 +199,7 @@ public class ReceiveService extends Service {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.parse("file://" + imageLocation), "image/*");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         }
@@ -235,6 +237,7 @@ public class ReceiveService extends Service {
         Intent intent = new Intent();
         ComponentName comp = new ComponentName("com.android.music", "com.android.music.MusicBrowserActivity");
         intent.setComponent(comp);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
     public void audioPlayPause(){

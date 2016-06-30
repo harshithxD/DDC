@@ -23,6 +23,7 @@ public class Constants {
     public static String END_CALL="EndCall";
     public static  String HOME="Home";
     public static String BACK = "Back";
+    public static String VOLUME = "Volume";
 
     public static int MODE_NORMAL = 0;
     public static int MODE_VOLUME = 255;

@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Live {
     int reading[];
-    int sensors = 10;
+    int sensors = 11;
 
     public Live(){
         reading = new int [sensors];
@@ -31,9 +31,7 @@ public class Live {
     }
 
     public void update(int[] readings){
-        for(int i = 0;i < sensors;i++){
-            reading[i] = readings[i];
-        }
+        reading = readings.clone();
     }
 
     public void print(){
