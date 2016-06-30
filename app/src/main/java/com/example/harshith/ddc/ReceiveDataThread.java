@@ -183,7 +183,7 @@ public class ReceiveDataThread extends Thread {
 
 
             threshold = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
-            DynamicQueue q = new DynamicQueue(a,threshold);
+            LagQueue q = new LagQueue(a,threshold);
             Live dynamiclive = new Live();
 
 
@@ -200,7 +200,7 @@ public class ReceiveDataThread extends Thread {
                 if(readings != null && readings.length == 11) {
                     dynamiclive.update(readings);
                     q.updateQueue(dynamiclive);
-                    if(counter > 20) {
+                    if(counter > 201) {
                         q.processQueue();
                         i = q.proceedExecution();
                         if (i != -1) {

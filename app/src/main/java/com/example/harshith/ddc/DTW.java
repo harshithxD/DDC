@@ -67,7 +67,7 @@ class DTW{
 		
 		minAccDistProcess();
 		
-		return minAccDist[m][n];
+		return minAccDist[m-1][n-1];
 	}
 
 	public int sdtwDistance(){
