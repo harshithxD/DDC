@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import weka.core.Instances;
 
 /**
  * Created by harshith on 17/6/16.
@@ -127,57 +128,11 @@ public class ReceiveDataThread extends Thread {
                     L.m(testConvert);
                     stringBuilder.delete(0, endOfLineIndex + 2);
 
-                    if(count == no){
-                        L.m("Gesture " + gestActive + " is activated");
-                        count = 0;
-                        gestActive = -1;
-                        //if( str.equals("n") ) { stay = false; break; }
-                    }
+                    // Recognition part
 
-                    if(count<no){
-                        if(readings.length == 11) {
-                            staticLive.update(readings);
-                        }
-                    }
+                    Instances
 
-                    for (int i=0; i<8; i++) {
-                        if(a[i].isInFrame(staticLive)){
-                            if(gestActive == i){
-                                count++; continue;
-                            }
-                            else{
-                                gestActive = i; count = 1; continue;
-                            }
-                        }
-                    }
-//            int[] flex = new int[5];
-//            for (int i = 0; i != 5; i++) {
-//                try {
-//                    flex[i] = readings[i];
-//                }
-//                catch (ArrayIndexOutOfBoundsException e) {
-//
-//                }
-//            }
-//
-//            int[] mpu = new int[6];
-//            for (int i = 0; i != 6; i++) {
-//                try {
-//                    mpu[i] = readings[5 + i];
-//                }
-//                catch (ArrayIndexOutOfBoundsException e) {
-//
-//                }
-//            }
                 }
-
-
-//                if(processHandler != null) {
-//                    processHandler.obtainMessage(1, readings).sendToTarget();
-//                }
-//                else {
-//                    processHandler = globalClass.getProcessHandler();
-//                }
             }
 
 

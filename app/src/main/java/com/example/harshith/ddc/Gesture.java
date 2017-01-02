@@ -4,7 +4,7 @@ package com.example.harshith.ddc;
 public class Gesture{
 
 	public int dataPoints = 15;
-	public int sensors = 11;
+	public static int sensors = 11;
 	public int adcLevels = 2;
 	public int adcUpper = 60;
 	public int adcLower = 200;
