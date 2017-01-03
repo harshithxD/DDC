@@ -123,5 +123,10 @@ public class MainActivity extends AppCompatActivity {
             },5000);
         }
     };
+
+    public void navigateLearning(View v) {
+        Intent intent = new Intent(getApplicationContext(), LearningActivity.class);
+        startActivity(intent);
+    }
 }
 

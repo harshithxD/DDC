@@ -129,8 +129,7 @@ public class ReceiveDataThread extends Thread {
                     stringBuilder.delete(0, endOfLineIndex + 2);
 
                     // Recognition part
-
-                    Instances
+                    
 
                 }
             }
