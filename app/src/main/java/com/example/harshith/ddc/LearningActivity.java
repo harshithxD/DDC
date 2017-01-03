@@ -11,5 +11,7 @@ public class LearningActivity extends AppCompatActivity {
         setContentView(R.layout.activity_learning);
     }
 
-
+    public void start() {
+//        ReceiveDataThread thread = new ReceiveDataThread();
+    }
 }

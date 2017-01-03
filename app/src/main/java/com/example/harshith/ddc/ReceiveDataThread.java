@@ -131,6 +131,7 @@ public class ReceiveDataThread extends Thread {
                     // Recognition part
                     
 
+
                 }
             }
 
