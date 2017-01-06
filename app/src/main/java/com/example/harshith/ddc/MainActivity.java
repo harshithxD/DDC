@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
+
+        navigateLearning();
     }
 
     @Override
@@ -67,22 +70,24 @@ public class MainActivity extends AppCompatActivity {
 
         textConnectionStatus.setText(" ");
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        try {
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            if(pairedDevices.size() > 0) {
+                findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+                for(BluetoothDevice bluetoothDevice : pairedDevices) {
+                    mPairedDevicesArrayAdapter.add(bluetoothDevice.getName() + "\n" + bluetoothDevice.getAddress());
 
-        if(pairedDevices.size() > 0) {
-            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-            for(BluetoothDevice bluetoothDevice : pairedDevices) {
-                mPairedDevicesArrayAdapter.add(bluetoothDevice.getName() + "\n" + bluetoothDevice.getAddress());
-
+                }
             }
-        }
-        else {
-            mPairedDevicesArrayAdapter.add("No devices paired");
-        }
+            else {
+                mPairedDevicesArrayAdapter.add("No devices paired");
+            }
 
-
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void navigateLearning(View v) {
+    public void navigateLearning() {
         Intent intent = new Intent(getApplicationContext(), LearningActivity.class);
         startActivity(intent);
     }

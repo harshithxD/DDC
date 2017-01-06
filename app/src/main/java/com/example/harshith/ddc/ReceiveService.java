@@ -30,7 +30,7 @@ public class ReceiveService extends Service {
                 if(message.what == Constants.CONNECTION_STATUS) {
                     if(message.arg1 == Constants.CONNECTION_STATUS_OK){
                         Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
-                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass);
+                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass, getApplicationContext());
                         receiveDataThread.start();
                     }
                     else if((int) message.obj == Constants.CONNECTION_STATUS_NOT_CONNECTED){

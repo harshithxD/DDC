@@ -1,12 +1,15 @@
 package com.example.harshith.ddc;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
-import android.os.Looper;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
 import java.io.InputStream;
-import weka.core.Instances;
+import java.util.ArrayList;
 
 /**
  * Created by harshith on 17/6/16.
@@ -20,13 +23,15 @@ public class ReceiveDataThread extends Thread {
     GlobalClass globalClass;
     public int readStatus;
     private StringBuilder stringBuilder = null;
-    int[] readings;
+    ArrayList<Integer> readings;
     Gesture []a;
+    Context context;
 
-    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler handler,GlobalClass globalClass) {
+    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler handler, GlobalClass globalClass, Context mContext) {
         this.bluetoothSocket = bluetoothSocket;
         this.handler = handler;
         this.globalClass = globalClass;
+        this.context = mContext;
         stringBuilder = new StringBuilder();
 
         a = new Gesture[8];
@@ -110,10 +115,10 @@ public class ReceiveDataThread extends Thread {
                     String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
 
                     String[] readingStrings = dataIn.split("\\+");
-                    readings = new int[readingStrings.length];
+                    readings = new ArrayList<>(readingStrings.length);
                     for (int i = 0; i != readingStrings.length; i++) {
                         try {
-                            readings[i] = Integer.valueOf(readingStrings[i]);
+                            readings.set(i, Integer.valueOf(readingStrings[i]));
                         } catch (NumberFormatException e) {
 
                         }
@@ -128,9 +133,12 @@ public class ReceiveDataThread extends Thread {
                     L.m(testConvert);
                     stringBuilder.delete(0, endOfLineIndex + 2);
 
-                    // Recognition part
-                    
+                    //// Recognition part
+                    // Broadcasting Part
+                    LocalBroadcastManager.getInstance(this.context).registerReceiver(LearningActivity.getBroadcastReceiver(), new IntentFilter("com.example.harshith.ddc.DATA_STREAM"));
 
+                    Intent intent = new Intent("com.example.harshith.ddc.BROADCAST_INTENT");
+                    intent.putIntegerArrayListExtra("com.example.harshith.ddc.READING", readings);
 
                 }
             }
@@ -155,10 +163,10 @@ public class ReceiveDataThread extends Thread {
             String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
 
             String[] readingStrings = dataIn.split("\\+");
-            readings = new int[readingStrings.length];
+            readings = new ArrayList<>(readingStrings.length);
             for (int i = 0; i != readingStrings.length; i++) {
                 try {
-                    readings[i] = Integer.valueOf(readingStrings[i]);
+                    readings.set(i, Integer.valueOf(readingStrings[i]));
                 } catch (NumberFormatException e) {
 
                 }
