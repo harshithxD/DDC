@@ -21,7 +21,6 @@
         </activity>
 
         <service android:name=".ReceiveService" />
-
         <activity android:name=".LearningActivity"></activity>
     </application>
 

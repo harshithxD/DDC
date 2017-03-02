@@ -3,6 +3,7 @@ package com.example.harshith.ddc;
 import android.app.Service;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -19,8 +20,12 @@ public class ReceiveService extends Service {
     ConnectThread connectThread;
     ReceiveDataThread receiveDataThread;
     private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    public Handler handler;
     GlobalClass globalClass;
+    public Handler handler;
+
+    public Handler parentActivityHandler = null;
+    private final IBinder mIBinder = new LocalBinder();
+
     @Override
     public void onCreate() {
 
@@ -30,8 +35,10 @@ public class ReceiveService extends Service {
                 if(message.what == Constants.CONNECTION_STATUS) {
                     if(message.arg1 == Constants.CONNECTION_STATUS_OK){
                         Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
-                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass, getApplicationContext());
-                        receiveDataThread.start();
+//                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass, getApplicationContext());
+//                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj, getApplicationContext());
+//                        receiveDataThread.start();
+                        parentActivityHandler.sendMessage(message);
                     }
                     else if((int) message.obj == Constants.CONNECTION_STATUS_NOT_CONNECTED){
                         Toast.makeText(getApplicationContext(),"Couldn't Connect to Dextera Domini, Check whether it is switched on",Toast.LENGTH_SHORT).show();
@@ -59,12 +66,26 @@ public class ReceiveService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mIBinder;
     }
 
-    @Override
-    public void onDestroy(){
+    public class LocalBinder extends Binder
+    {
+        public ReceiveService getInstance()
+        {
+            return ReceiveService.this;
+        }
+    }
+
+    public void setParentHandler(Handler handler){
+        parentActivityHandler = handler;
+    }
+
+    public void spawnRecognitionThread(Message message){
+        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj, handler, getApplicationContext());
+        receiveDataThread.start();
 
     }
+
 }
 

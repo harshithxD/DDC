@@ -34,17 +34,22 @@
         android:text="@string/not_found"
         android:id="@+id/info_text"/>
 
-    <LinearLayout
+    <Button
+        android:text="Training"
+        android:onClick="navigateLearning"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:text="Training"
-            android:onClick="navigateLearning"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/button"
-            android:elevation="0dp" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:id="@+id/button_training"
+        android:elevation="0dp" />
+
+    <Button
+        android:text="Recognition"
+        android:onClick="startDetecting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_recog"
+        android:elevation="0dp" />
+
 
 
 </LinearLayout>

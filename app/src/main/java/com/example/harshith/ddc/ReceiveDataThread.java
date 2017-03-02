@@ -4,7 +4,9 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
@@ -18,66 +20,67 @@ import java.util.ArrayList;
 public class ReceiveDataThread extends Thread {
     private BluetoothSocket bluetoothSocket;
     private InputStream inputStream;
-    Handler handler;
-    Handler processHandler = null;
-    GlobalClass globalClass;
+    Handler deliveryHandler;
+//    Handler processHandler = null;
+//    GlobalClass globalClass;
     public int readStatus;
     private StringBuilder stringBuilder = null;
     ArrayList<Integer> readings;
     Gesture []a;
     Context context;
 
-    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler handler, GlobalClass globalClass, Context mContext) {
+//    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler handler, GlobalClass globalClass, Context mContext) {
+    public ReceiveDataThread(BluetoothSocket bluetoothSocket, Handler deliveryHandler, Context mContext) {
         this.bluetoothSocket = bluetoothSocket;
-        this.handler = handler;
-        this.globalClass = globalClass;
+        this.deliveryHandler = deliveryHandler;
+//        this.globalClass = globalClass;
         this.context = mContext;
         stringBuilder = new StringBuilder();
 
-        a = new Gesture[8];
-        for (int i = 0; i<8; i++) {
-            a[i] = new StaticGesture();
-        }
-
-        int []hand = {0,0,0,0,0,0,0,0,0,0,0}; int q=0;
-
-        q=0; hand = new int [] {0,0,0,0,0,8,8,8,8,8,8};
-        // neutral
-        a[q].updateFrame(hand);
-
-        q=1; hand = new int [] {1,1,0,0,0,8,8,8,8,1,8};
-        // voice search
-        a[q].updateFrame(hand);
-
-        q=2; hand = new int [] {1,0,1,1,1,8,8,8,8,1,8};
+//        a = new Gesture[8];
+//        for (int i = 0; i<8; i++) {
+//            a[i] = new StaticGesture();
+//        }
+//
+//        int []hand = {0,0,0,0,0,0,0,0,0,0,0}; int q=0;
+//
+//        q=0; hand = new int [] {0,0,0,0,0,8,8,8,8,8,8};
+//         neutral
+//        a[q].updateFrame(hand);
+//
+//        q=1; hand = new int [] {1,1,0,0,0,8,8,8,8,1,8};
+//         voice search
+//        a[q].updateFrame(hand);
+//
+//        q=2; hand = new int [] {1,0,1,1,1,8,8,8,8,1,8};
         // tap
-        a[q].updateFrame(hand);
-
-        q=3; hand = new int [] {0,1,1,1,0,8,8,8,8,1,8};
+//        a[q].updateFrame(hand);
+//
+//        q=3; hand = new int [] {0,1,1,1,0,8,8,8,8,1,8};
         // call
-        a[q].updateFrame(hand);
-
-        q=4; hand = new int [] {0,0,1,1,1,8,8,8,-1,8,8};
+//        a[q].updateFrame(hand);
+//
+//        q=4; hand = new int [] {0,0,1,1,1,8,8,8,-1,8,8};
         // cam open
-        a[q].updateFrame(hand);
-
-        q=5; hand = new int [] {0,0,0,1,1,8,8,8,-1,8,8};
+//        a[q].updateFrame(hand);
+//
+//        q=5; hand = new int [] {0,0,0,1,1,8,8,8,-1,8,8};
         // cam click
-        a[q].updateFrame(hand);
-
-        q=6; hand = new int [] {1,0,1,1,0,8,8,8,8,1,8};
+//        a[q].updateFrame(hand);
+//
+//        q=6; hand = new int [] {1,0,1,1,0,8,8,8,8,1,8};
         // music open
-        a[q].updateFrame(hand);
-
-        q=7; hand = new int [] {0,0,1,1,0,8,8,8,8,1,8};
+//        a[q].updateFrame(hand);
+//
+//        q=7; hand = new int [] {0,0,1,1,0,8,8,8,8,1,8};
         // music play
-        a[q].updateFrame(hand);
-
+//        a[q].updateFrame(hand);
+//
     }
 
-    public void setProcessHandler(Handler processHandler) {
-        this.processHandler = processHandler;
-    }
+//    public void setProcessHandler(Handler processHandler) {
+//        this.processHandler = processHandler;
+//    }
 
     @Override
     public void run(){
@@ -135,10 +138,12 @@ public class ReceiveDataThread extends Thread {
 
                     //// Recognition part
                     // Broadcasting Part
-                    LocalBroadcastManager.getInstance(this.context).registerReceiver(LearningActivity.getBroadcastReceiver(), new IntentFilter("com.example.harshith.ddc.DATA_STREAM"));
-
-                    Intent intent = new Intent("com.example.harshith.ddc.BROADCAST_INTENT");
-                    intent.putIntegerArrayListExtra("com.example.harshith.ddc.READING", readings);
+//                    LocalBroadcastManager.getInstance(this.context).registerReceiver(LearningActivity.getBroadcastReceiver(), new IntentFilter("com.example.harshith.ddc.DATA_STREAM"));
+                    Bundle readingsBundle = new Bundle();
+                    readingsBundle.putIntegerArrayList("READINGS_INSTANCE", readings);
+                    Message readingsMessage = new Message();
+                    readingsMessage.setData(readingsBundle);
+                    deliveryHandler.sendMessage(readingsMessage);
 
                 }
             }
