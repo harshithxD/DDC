@@ -1,16 +1,20 @@
 package com.example.harshith.ddc;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,8 +37,37 @@ public class LearningActivity extends AppCompatActivity {
     private Learning learning;
     NumberPicker np;
     Handler readingHandler;
-
     ReceiveDataThread receiveDataThread = null;
+
+
+    ReceiveService mService = null;
+    boolean mServiceConnected = false;
+
+    private ServiceConnection mConn = new ServiceConnection() {
+
+        @Override
+
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+
+            Log.d("BinderActivity", "Connected to service.");
+            mService = ((ReceiveService.LocalBinder) binder).getInstance();
+            mServiceConnected = true;
+        }
+
+        /**
+         * Connection dropped.
+         */
+
+        @Override
+
+        public void onServiceDisconnected(ComponentName className) {
+
+            Log.d("BinderActivity", "Disconnected from service.");
+            mService = null;
+            mServiceConnected = false;
+        }
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +81,10 @@ public class LearningActivity extends AppCompatActivity {
                 record = !record;
                 if(record){
                     startButton.setText("Stop Recording");
+                    mService.checkWorking();
                 }else{
                     startButton.setText("Start Recording");
+                    mService.checkWorking();
                 }
             }
         });
@@ -68,8 +103,9 @@ public class LearningActivity extends AppCompatActivity {
             }
         };
 
+
+
         Message connectionMessage = getIntent().getParcelableExtra("DEVICE_CONNECTION_DATA");
-        receiveDataThread = new ReceiveDataThread()
 
     }
 
@@ -131,5 +167,22 @@ public class LearningActivity extends AppCompatActivity {
         super.onPause();
 
 //        learnerDiskSave();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        bindService(new Intent(this, ReceiveService.class), mConn, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mServiceConnected) {
+            unbindService(mConn);
+            mServiceConnected = false;
+        }
+
     }
 }

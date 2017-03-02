@@ -87,5 +87,9 @@ public class ReceiveService extends Service {
 
     }
 
+    public void checkWorking() {
+        L.m("This is a call from Learning Activity");
+    }
+
 }
 
