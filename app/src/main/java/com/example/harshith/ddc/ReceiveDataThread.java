@@ -116,12 +116,11 @@ public class ReceiveDataThread extends Thread {
                         startOfLineIndex = 1;
                     }
                     String dataIn = stringBuilder.substring(startOfLineIndex, endOfLineIndex);
-
                     String[] readingStrings = dataIn.split("\\+");
                     readings = new ArrayList<>(readingStrings.length);
                     for (int i = 0; i != readingStrings.length; i++) {
                         try {
-                            readings.set(i, Integer.valueOf(readingStrings[i]));
+                            readings.add(Integer.valueOf(readingStrings[i]));
                         } catch (NumberFormatException e) {
 
                         }
@@ -133,16 +132,13 @@ public class ReceiveDataThread extends Thread {
                     for (int reading : readings) {
                         testConvert += " " + reading;
                     }
-                    L.m(testConvert);
+//                    L.m(testConvert);
                     stringBuilder.delete(0, endOfLineIndex + 2);
 
                     //// Recognition part
-                    // Broadcasting Part
-//                    LocalBroadcastManager.getInstance(this.context).registerReceiver(LearningActivity.getBroadcastReceiver(), new IntentFilter("com.example.harshith.ddc.DATA_STREAM"));
-                    Bundle readingsBundle = new Bundle();
-                    readingsBundle.putIntegerArrayList("READINGS_INSTANCE", readings);
-                    Message readingsMessage = new Message();
-                    readingsMessage.setData(readingsBundle);
+                    // Send Readings back to ReceiveService
+                    Message readingsMessage = deliveryHandler.obtainMessage(Constants.READ_STATUS, 42, 0 , readings);
+
                     deliveryHandler.sendMessage(readingsMessage);
 
                 }

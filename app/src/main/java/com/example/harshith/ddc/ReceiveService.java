@@ -4,12 +4,15 @@ import android.app.Service;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -22,9 +25,13 @@ public class ReceiveService extends Service {
     private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     GlobalClass globalClass;
     public Handler handler;
-
     public Handler parentActivityHandler = null;
     private final IBinder mIBinder = new LocalBinder();
+
+    boolean storeReading = false;
+    boolean prevStoreReading = false;
+    String toBeStored = "";
+
 
     @Override
     public void onCreate() {
@@ -38,14 +45,31 @@ public class ReceiveService extends Service {
 //                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj,handler,globalClass, getApplicationContext());
 //                        receiveDataThread = new ReceiveDataThread((BluetoothSocket) message.obj, getApplicationContext());
 //                        receiveDataThread.start();
+                        spawnRecognitionThread(message);
                         parentActivityHandler.sendMessage(message);
                     }
-                    else if((int) message.obj == Constants.CONNECTION_STATUS_NOT_CONNECTED){
+                    else if(message.arg1 == Constants.CONNECTION_STATUS_NOT_CONNECTED){
                         Toast.makeText(getApplicationContext(),"Couldn't Connect to Dextera Domini, Check whether it is switched on",Toast.LENGTH_SHORT).show();
                     }
                 }
                 else if (message.what == Constants.READ_STATUS) {
-
+                    if(message.obj != null) {
+                        ArrayList<Integer> readings = (ArrayList<Integer>) message.obj;
+//                        System.out.println(readings);
+//                        System.out.println(storeReading);
+                        if(storeReading) {
+                            toBeStored += TextUtils.join(",", readings) + ";";
+                        }
+                        if(prevStoreReading && !storeReading) {
+                            Intent intent = new Intent();
+                            intent.setAction(Constants.RECEIVE_ACTION);
+                            intent.putExtra(Constants.READING_PASSED, toBeStored);
+                            sendBroadcast(intent);
+                            System.out.println(toBeStored);
+                            toBeStored = "";
+                        }
+                        prevStoreReading = storeReading;
+                    }
                 }
             }
         };
@@ -87,8 +111,8 @@ public class ReceiveService extends Service {
 
     }
 
-    public void checkWorking() {
-        L.m("This is a call from Learning Activity");
+    public void startStop() {
+        storeReading = !storeReading;
     }
 
 }

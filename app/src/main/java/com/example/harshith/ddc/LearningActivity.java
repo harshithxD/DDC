@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -39,6 +40,7 @@ public class LearningActivity extends AppCompatActivity {
     Handler readingHandler;
     ReceiveDataThread receiveDataThread = null;
 
+    DataReceiver dataReceiver;
 
     ReceiveService mService = null;
     boolean mServiceConnected = false;
@@ -81,10 +83,10 @@ public class LearningActivity extends AppCompatActivity {
                 record = !record;
                 if(record){
                     startButton.setText("Stop Recording");
-                    mService.checkWorking();
+                    mService.startStop();
                 }else{
                     startButton.setText("Start Recording");
-                    mService.checkWorking();
+                    mService.startStop();
                 }
             }
         });
@@ -173,6 +175,12 @@ public class LearningActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         bindService(new Intent(this, ReceiveService.class), mConn, Context.BIND_AUTO_CREATE);
+
+        dataReceiver = new DataReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.RECEIVE_ACTION);
+        registerReceiver(dataReceiver, intentFilter);
+
     }
 
     @Override
@@ -182,6 +190,20 @@ public class LearningActivity extends AppCompatActivity {
         if (mServiceConnected) {
             unbindService(mConn);
             mServiceConnected = false;
+        }
+
+    }
+
+
+    private class DataReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+            // TODO Auto-generated method stub
+
+            String datapassed = arg1.getStringExtra(Constants.READING_PASSED);
+            L.m("This is data from Service : " + datapassed);
+
         }
 
     }

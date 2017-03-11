@@ -63,14 +63,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
 
-                Toast.makeText(getApplicationContext(), msg.obj.toString(), Toast.LENGTH_LONG);
+//                Toast.makeText(getApplicationContext(), msg.obj.toString(), Toast.LENGTH_LONG);
                 connectionMessage = msg;
-//                if(msg.obj.toString().equals("Connected")){
-//                    textConnectionStatus.setText("Connected");
-//                }
-//                else {
-//                    textConnectionStatus.setText("Connection Failed");
-//                }
+                if(msg.arg1 == Constants.CONNECTION_STATUS_OK){
+                    textConnectionStatus.setText("Connected");
+                }
+                else {
+                    textConnectionStatus.setText("Connection Failed");
+                }
             }
         };
 

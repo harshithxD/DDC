@@ -12,5 +12,9 @@ public class Constants {
     public static int READ_STATUS = 18;
     public static int READ_STATUS_OK = 0;
     public static int READ_STATUS_NOT_OK = 1;
+
+    public static String READING_INSTANCE = "READING_INSTANCE";
+    public static String RECEIVE_ACTION = "RECEIVE_ACTION";
+    public static String READING_PASSED = "READING_PASSED";
 }
 
